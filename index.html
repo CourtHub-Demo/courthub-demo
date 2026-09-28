@@ -1362,7 +1362,18 @@ body{color:var(--ink);background:#f6faf8}
 :root[data-theme="dark"] .cancel-btn:hover { background:#351d25; }
 :root[data-theme="dark"] .badge-cancelled { background:#351d25 !important; color:#ffacb8 !important; border-color:#85404f !important; }
 
-\n.booking-calendar { grid-template-columns:repeat(7,minmax(0,1fr)); max-height:420px; overflow:auto; padding-right:2px; }\n@media(max-width:520px) { .booking-calendar { grid-template-columns:repeat(5,minmax(0,1fr)); max-height:500px; } }\n</style>
+\n.booking-calendar { grid-template-columns:repeat(7,minmax(0,1fr)); max-height:420px; overflow:auto; padding-right:2px; }\n@media(max-width:520px) { .booking-calendar { grid-template-columns:repeat(5,minmax(0,1fr)); max-height:500px; } }\n
+/* ---------- Booking confirmation notifications ---------- */
+.notification-card { border:1px solid var(--border); border-radius:14px; padding:15px; margin:0 0 20px; text-align:left; background:var(--surface); }
+.notification-head { display:flex; gap:10px; align-items:center; }
+.notification-icon { width:30px; height:30px; display:grid; place-items:center; border-radius:9px; background:var(--primary-soft); color:var(--primary); font-weight:800; }
+.notification-destination { font-size:12px; margin:12px 0; color:var(--muted); }
+.notification-actions { display:flex; gap:8px; }
+.notification-actions .btn { flex:1; padding:9px 10px; font-size:12px; }
+.notification-footnote { color:var(--muted); font-size:11px; line-height:1.45; margin-top:11px; }
+:root[data-theme="dark"] .notification-card { background:#14231e !important; border-color:#2b473e !important; }
+
+</style>
 </head>
 <body>
 <div class="page-section" id="login" style="display:block;">
@@ -1954,7 +1965,12 @@ body{color:var(--ink);background:#f6faf8}
       <p class="muted" style="font-size:13.5px;" id="doneCourtDateSlot">Badminton Court 1 · Today, 10:00 AM</p>
       <p class="muted" style="font-size:13.5px;margin-top:4px;" id="doneAmount">Amount paid: ₹500</p>
     </div>
-
+    <div class="notification-card" id="bookingNotificationCard">
+      <div class="notification-head"><span class="notification-icon">✉</span><div><strong>Confirmation notification</strong><p class="muted" style="font-size:12px;margin-top:3px;">Send your reservation details to yourself.</p></div></div>
+      <p id="notificationDestination" class="notification-destination">Email: — · SMS: Add a phone number in your profile</p>
+      <div class="notification-actions"><button type="button" class="btn btn-outline" id="sendEmailButton" onclick="sendBookingEmail()">Send email</button><button type="button" class="btn btn-outline" id="sendSmsButton" onclick="sendBookingSms()">Send SMS</button></div>
+      <p class="notification-footnote">Email opens your mail app; SMS opens your phone’s messaging app. No provider account is required for this demo.</p>
+    </div>
     <a href="#" data-nav="account" class="btn btn-primary">Go to My Bookings</a>
   </div>
 </div>
@@ -2436,6 +2452,7 @@ body{color:var(--ink);background:#f6faf8}
   appData.courts.forEach(function(c){ if(c && (c.slots||[]).length <= 5) c.slots = fullOperatingSlots.slice(); });
   appData.facility = appData.facility || {name:'Game Point Arena',address:'Satellite, Ahmedabad',description:'Indoor courts, floodlights and easy parking.'};
   appData.payments = appData.payments || [];
+  appData.notifications = appData.notifications || [];
   appData.reviews = appData.reviews || [];
   saveData();
   saveData();
@@ -2612,6 +2629,14 @@ body{color:var(--ink);background:#f6faf8}
     btn.textContent = 'Pay ₹' + pendingBooking.amount;
   }
 
+  function createBookingNotifications(booking){
+    var record={id:'n'+Date.now(),bookingId:booking.id,userId:booking.userId,type:'booking_confirmation',email:currentUser&&currentUser.email||'',phone:currentUser&&currentUser.phone||'',createdAt:new Date().toISOString(),emailSentAt:'',smsSentAt:''};
+    appData.notifications.push(record); return record;
+  }
+  function latestBookingNotification(){if(!lastBooking)return null;return (appData.notifications||[]).filter(function(n){return n.bookingId===lastBooking.id;})[0]||null;}
+  function bookingNotificationBody(){if(!lastBooking)return '';return 'CourtHub booking confirmation: '+lastBooking.venue+' — '+lastBooking.court+' on '+lastBooking.date+' at '+lastBooking.slot+'. Amount paid: ₹'+lastBooking.amount+'. Booking status: '+lastBooking.status+'.';}
+  function sendBookingEmail(){var n=latestBookingNotification();if(!n||!n.email){showToast('Add an email address to your profile first');return;}n.emailSentAt=new Date().toISOString();saveData();var subject='CourtHub booking confirmation — '+lastBooking.venue;window.location.href='mailto:'+encodeURIComponent(n.email)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(bookingNotificationBody());renderDonePage();showToast('Email confirmation prepared');}
+  function sendBookingSms(){var n=latestBookingNotification();if(!n||!n.phone){showToast('Add a phone number in your profile to send SMS');return;}n.smsSentAt=new Date().toISOString();saveData();window.location.href='sms:'+encodeURIComponent(n.phone)+'?body='+encodeURIComponent(bookingNotificationBody());renderDonePage();showToast('SMS confirmation prepared');}
   function renderDonePage() {
     if (!lastBooking) return;
     var venueEl = document.getElementById('doneVenueName');
@@ -2622,6 +2647,10 @@ body{color:var(--ink);background:#f6faf8}
     venueEl.textContent = lastBooking.venue;
     lineEl.textContent = lastBooking.court + (lastBooking.date ? (' \u00b7 ' + lastBooking.date) : '') + (lastBooking.slot ? (', ' + lastBooking.slot) : '');
     amtEl.textContent = 'Amount paid: ₹' + lastBooking.amount;
+    var n=latestBookingNotification(),dest=document.getElementById('notificationDestination'),emailBtn=document.getElementById('sendEmailButton'),smsBtn=document.getElementById('sendSmsButton');
+    if(dest)dest.textContent='Email: '+((n&&n.email)||'—')+' · SMS: '+((n&&n.phone)||'Add a phone number in your profile');
+    if(emailBtn)emailBtn.textContent=n&&n.emailSentAt?'Email prepared ✓':'Send email';
+    if(smsBtn){smsBtn.textContent=n&&n.smsSentAt?'SMS prepared ✓':'Send SMS';smsBtn.disabled=!(n&&n.phone);}
   }
 
   function renderAll() {
@@ -2842,6 +2871,7 @@ body{color:var(--ink);background:#f6faf8}
       };
       appData.payments.push({id:'pay_'+Date.now(),bookingId:booking.id,method:methodInput ? methodInput.value : 'card',amount:booking.amount,status:'Paid',gateway:'Razorpay-ready',createdAt:new Date().toISOString()});
       appData.bookings.push(booking);
+      createBookingNotifications(booking);
       saveData();
       lastBooking = booking;
       renderAll();
