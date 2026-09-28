@@ -1362,7 +1362,7 @@ body{color:var(--ink);background:#f6faf8}
 :root[data-theme="dark"] .cancel-btn:hover { background:#351d25; }
 :root[data-theme="dark"] .badge-cancelled { background:#351d25 !important; color:#ffacb8 !important; border-color:#85404f !important; }
 
-</style>
+\n.booking-calendar { grid-template-columns:repeat(7,minmax(0,1fr)); max-height:420px; overflow:auto; padding-right:2px; }\n@media(max-width:520px) { .booking-calendar { grid-template-columns:repeat(5,minmax(0,1fr)); max-height:500px; } }\n</style>
 </head>
 <body>
 <div class="page-section" id="login" style="display:block;">
@@ -1835,7 +1835,7 @@ body{color:var(--ink);background:#f6faf8}
     </div>
 
     <div class="live-date-card">● <strong>Availability updates live</strong> · <span id="bookingTodayLabel">Monday, September 28, 2026</span> · local time <span id="bookingLiveTime">07:41:45 AM</span></div>
-    <div class="field"><label>Choose a booking date</label><div id="bookingCalendar" class="booking-calendar" aria-label="Choose a booking date"></div><input type="text" id="date" name="date" value="Today (live)" readonly="" aria-readonly="true"><input type="hidden" id="bookingDateKey" name="booking_date" value="2026-09-28"><small class="muted" style="display:block;margin-top:6px;font-size:12px;">Choose today or any of the next 6 days. Past dates are hidden.</small></div>
+    <div class="field"><label>Choose a booking date</label><div id="bookingCalendar" class="booking-calendar" aria-label="Choose a booking date"></div><input type="text" id="date" name="date" value="Today (live)" readonly="" aria-readonly="true"><input type="hidden" id="bookingDateKey" name="booking_date" value="2026-09-28"><small class="muted" style="display:block;margin-top:6px;font-size:12px;">Choose today or any of the next 30 days. Past dates are hidden.</small></div>
     <div class="field"><label>Available slots</label><div id="liveSlotGrid" class="slot-grid"><div class="slot live-available selected" data-hour="8">8 AM</div><div class="slot live-available " data-hour="9">9 AM</div><div class="slot live-available " data-hour="10">10 AM</div><div class="slot live-available " data-hour="11">11 AM</div><div class="slot live-available " data-hour="12">12 PM</div><div class="slot live-available " data-hour="13">1 PM</div><div class="slot live-available " data-hour="14">2 PM</div><div class="slot live-available " data-hour="15">3 PM</div><div class="slot live-available " data-hour="16">4 PM</div><div class="slot live-available " data-hour="17">5 PM</div><div class="slot live-available " data-hour="18">6 PM</div><div class="slot live-available " data-hour="19">7 PM</div><div class="slot live-available " data-hour="20">8 PM</div><div class="slot live-available " data-hour="21">9 PM</div></div></div>
     <a href="#" data-nav="confirm-payment" id="continueToConfirm" class="btn btn-primary mt-24">Continue</a>
   </div>
@@ -2642,7 +2642,7 @@ body{color:var(--ink);background:#f6faf8}
     window.scrollTo(0, 0);
     placeThemeToggle();
 
-    if (id === 'select-court') { renderLiveBookingSlots(); renderLiveClock(); }
+    if (id === 'select-court') { renderBookingCourtOptions(); renderLiveBookingSlots(); renderLiveClock(); }
     if (id === 'confirm-payment') renderConfirmPage();
     if (id === 'payment') renderPaymentPage();
     if (id === 'booking-confirmed') renderDonePage();
@@ -2795,20 +2795,17 @@ body{color:var(--ink);background:#f6faf8}
     var continueBtn = document.getElementById('continueToConfirm');
     if (continueBtn) continueBtn.addEventListener('click', function (e) {
       e.preventDefault();
-      var courtSelect = document.getElementById('court');
-      var dateInput = document.getElementById('date');
       var selectedSlotEl = document.querySelector('#liveSlotGrid .slot.selected');
-      var dateValue=(document.getElementById('bookingDateKey')||{}).value||localDateKey(new Date()); if(dateValue!==localDateKey(new Date())){alert('Please select today’s date only.');renderLiveBookingSlots();return;} if(!selectedSlotEl){alert('No live slot is available right now.');return;}
-      var courtText = courtSelect ? courtSelect.value : 'Court';
-      var courtName = courtText.split(' — ')[0] || courtText;
-      var priceMatch = courtText.match(/₹(\d+)/);
-      var price = priceMatch ? parseInt(priceMatch[1], 10) : 500;
+      var dateValue=(document.getElementById('bookingDateKey')||{}).value||localDateKey(new Date());
+      if(!selectedSlotEl){alert('Please choose an available time slot.');return;}
+      var court=selectedBookingCourt();
+      if(!court||court.status!=='Open'){alert('Please choose an open court.');return;}
       pendingBooking = {
-        venue: 'Game Point Arena',
-        court: courtName,
+        venue: (currentVenue&&currentVenue.name)||'Game Point Arena',
+        court: court.name,
         date: dateValue,
-        slot: selectedSlotEl ? selectedSlotEl.textContent.trim() : '',
-        amount: price
+        slot: selectedSlotEl.textContent.trim(),
+        amount: parseInt(court.price,10)||500
       };
       nav('confirm-payment');
     });
@@ -2960,6 +2957,20 @@ body{color:var(--ink);background:#f6faf8}
   function slotLabel(hour){var h=hour%12||12;return h+' '+(hour<12?'AM':'PM');}
   function liveSlotHours(){return [6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21];}
   function renderLiveClock(){var now=new Date();document.querySelectorAll('[data-live-clock]').forEach(function(e){e.textContent=prettyTime(now);});var t=document.getElementById('bookingLiveTime');if(t)t.textContent=prettyTime(now);var label=document.getElementById('bookingTodayLabel');if(label)label.textContent=prettyToday(now);}
+  function bookingCourts(){
+    var venueName=currentVenue&&currentVenue.name;
+    if(!venueName||venueName==='Game Point Arena')return appData.courts||[];
+    var v=currentVenue||{};
+    var slots=liveSlotHours().map(function(h){return slotLabel(h);});
+    var baseSport=v.sport||'Sports';
+    return [
+      {id:'venue_'+slugify(venueName)+'_1',name:baseSport+' Court 1',sport:baseSport,price:v.price||500,status:'Open',slots:slots},
+      {id:'venue_'+slugify(venueName)+'_2',name:baseSport+' Court 2',sport:baseSport,price:v.price||500,status:'Open',slots:slots}
+    ];
+  }
+  function slugify(v){return String(v||'venue').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');}
+  function selectedBookingCourt(){var select=document.getElementById('court'),courts=bookingCourts();if(!select||!courts.length)return courts[0]||null;return courts.filter(function(c){return c.id===select.value;})[0]||courts[0];}
+  function renderBookingCourtOptions(){var select=document.getElementById('court'),courts=bookingCourts();if(!select||!courts.length)return;var previous=select.value;select.innerHTML=courts.map(function(c){return '<option value="'+escapeHtml(c.id)+'">'+escapeHtml(c.name)+' — ₹'+c.price+'/hr</option>';}).join('');if(courts.some(function(c){return c.id===previous;}))select.value=previous;select.onchange=function(){renderLiveBookingSlots();};}
   function renderBookingCalendar(){
     var calendar=document.getElementById('bookingCalendar'),keyInput=document.getElementById('bookingDateKey');
     if(!calendar||!keyInput)return;
@@ -2967,35 +2978,32 @@ body{color:var(--ink);background:#f6faf8}
     if(chosen<today)chosen=today;
     selectedBookingDate=chosen; keyInput.value=chosen;
     var base=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-    calendar.innerHTML=Array.from({length:7},function(_,i){
+    calendar.innerHTML=Array.from({length:30},function(_,i){
       var d=new Date(base); d.setDate(base.getDate()+i); var key=localDateKey(d);
       var selected=key===chosen?' selected':''; var todayClass=key===today?' today':'';
       return '<button type="button" class="booking-day'+selected+todayClass+'" onclick="selectBookingDate(\''+key+'\')"><span class="day-name">'+d.toLocaleDateString(undefined,{weekday:'short'})+'</span><span class="day-number">'+d.getDate()+'</span><span class="day-month">'+d.toLocaleDateString(undefined,{month:'short'})+'</span></button>';
     }).join('');
   }
-  function selectBookingDate(key){
-    selectedBookingDate=key;
-    var input=document.getElementById('bookingDateKey'); if(input)input.value=key;
-    renderLiveBookingSlots();
-  }
+  function selectBookingDate(key){selectedBookingDate=key;var input=document.getElementById('bookingDateKey');if(input)input.value=key;renderLiveBookingSlots();}
   function renderLiveBookingSlots(){
     var input=document.getElementById('date'),keyInput=document.getElementById('bookingDateKey'),grid=document.getElementById('liveSlotGrid');
     if(!input||!grid)return;
+    renderBookingCourtOptions();
     var now=new Date(),today=localDateKey(now),chosen=(keyInput&&keyInput.value)||selectedBookingDate||today;
     if(chosen<today)chosen=today;
-    selectedBookingDate=chosen; if(keyInput)keyInput.value=chosen;
-    var selectedDate=new Date(chosen+'T12:00:00');
-    input.value=prettyToday(selectedDate)+(chosen===today?' (Today)':'');
-    renderBookingCalendar();
-    var next=chosen===today ? now.getHours()+(now.getMinutes()>0?1:0) : 6;
-    var venueName=(currentVenue&&currentVenue.name)||'Game Point Arena';
-    var booked={};
-    (appData.bookings||[]).forEach(function(b){if(b.venue===venueName&&b.date===chosen&&b.slot)booked[b.slot]=true;});
-    var available=liveSlotHours().filter(function(h){return h>=next&& !booked[slotLabel(h)];});
-    if(!available.length){grid.innerHTML='<div class="no-live-slots">No slots are available for this date. Choose another day.</div>';return;}
-    grid.innerHTML=available.map(function(h,i){return '<div class="slot live-available '+(i===0?'selected':'')+'" data-hour="'+h+'">'+slotLabel(h)+'</div>';}).join('');
+    selectedBookingDate=chosen;if(keyInput)keyInput.value=chosen;
+    var selectedDate=new Date(chosen+'T12:00:00');input.value=prettyToday(selectedDate)+(chosen===today?' (Today)':'');renderBookingCalendar();
+    var court=selectedBookingCourt();if(!court||court.status!=='Open'){grid.innerHTML='<div class="no-live-slots">This court is currently closed. Choose another court.</div>';return;}
+    var next=chosen===today?now.getHours()+(now.getMinutes()>0?1:0):0;
+    var venueName=(currentVenue&&currentVenue.name)||'Game Point Arena',booked={};
+    (appData.bookings||[]).forEach(function(b){if(b.venue===venueName&&b.court===court.name&&b.date===chosen&&b.slot&&b.status!=='Cancelled'&&b.status!=='Rejected')booked[b.slot]=true;});
+    var configured=(court.slots&&court.slots.length?court.slots:liveSlotHours().map(function(h){return slotLabel(h);}));
+    var available=configured.filter(function(label){var h=hourFromLabel(label);return h>=next&&!booked[label];});
+    if(!available.length){grid.innerHTML='<div class="no-live-slots">No slots are available for this date. Choose another day or court.</div>';return;}
+    grid.innerHTML=available.map(function(label,i){return '<div class="slot live-available '+(i===0?'selected':'')+'" data-hour="'+hourFromLabel(label)+'">'+escapeHtml(label)+'</div>';}).join('');
     grid.querySelectorAll('.slot').forEach(function(slot){slot.addEventListener('click',function(){grid.querySelectorAll('.slot').forEach(function(x){x.classList.remove('selected');});this.classList.add('selected');});});
   }
+  function hourFromLabel(label){var m=String(label).match(/(\d{1,2})\s*(AM|PM)/i);if(!m)return 0;var h=parseInt(m[1],10)%12;return h+(m[2].toUpperCase()==='PM'?12:0);}
   function refreshLiveAvailability(){renderLiveClock();var page=document.getElementById('select-court');if(page&&page.style.display!=='none')renderLiveBookingSlots();}
   document.addEventListener('DOMContentLoaded',function(){renderLiveBookingSlots();renderLiveClock();setInterval(refreshLiveAvailability,1000);});
 
