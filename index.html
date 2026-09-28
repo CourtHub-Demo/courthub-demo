@@ -1330,6 +1330,13 @@ body{color:var(--ink);background:#f6faf8}
 :root[data-theme="dark"] #admin-profile { background:#0b1512 !important; }
 :root[data-theme="dark"] .panel-main { color:#edf7f3 !important; }
 
+
+/* Theme toggle lives between Venues and the account/login action */
+.theme-toggle { position:static !important; top:auto !important; right:auto !important; margin-left:4px; white-space:nowrap; }
+.auth-panel { position:relative; }
+.auth-panel > .theme-toggle { position:absolute !important; top:18px !important; right:18px !important; }
+.navbar .theme-toggle { order: 0; }
+
 </style>
 </head>
 <body>
@@ -2582,6 +2589,7 @@ body{color:var(--ink);background:#f6faf8}
     document.querySelectorAll('.page-section').forEach(function (s) { s.style.display = 'none'; });
     document.getElementById(id).style.display = 'block';
     window.scrollTo(0, 0);
+    placeThemeToggle();
 
     if (id === 'select-court') { renderLiveBookingSlots(); renderLiveClock(); }
     if (id === 'confirm-payment') renderConfirmPage();
@@ -2609,6 +2617,25 @@ body{color:var(--ink);background:#f6faf8}
       toggle.setAttribute('aria-label', next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
     }
   }
+  function placeThemeToggle() {
+    var toggle = document.getElementById('themeToggle');
+    if (!toggle) return;
+    var visibleLinks = null;
+    document.querySelectorAll('.page-section').forEach(function (section) {
+      if (getComputedStyle(section).display !== 'none' && section.querySelector('.navbar-links')) {
+        visibleLinks = section.querySelector('.navbar-links');
+      }
+    });
+    if (visibleLinks) {
+      var account = visibleLinks.querySelector('[data-player-avatar], [data-owner-avatar], [data-admin-avatar], .avatar');
+      visibleLinks.insertBefore(toggle, account || null);
+      toggle.classList.remove('auth-theme-toggle');
+    } else {
+      var panel = document.querySelector('#login .auth-panel') || document.body;
+      panel.appendChild(toggle);
+      toggle.classList.add('auth-theme-toggle');
+    }
+  }
   function initThemeToggle() {
     var saved = 'light';
     try { saved = localStorage.getItem('courthub_theme') || 'light'; } catch (e) {}
@@ -2624,6 +2651,7 @@ body{color:var(--ink);background:#f6faf8}
       document.body.appendChild(toggle);
     }
     applyTheme(saved);
+    placeThemeToggle();
   }
 
   document.addEventListener('DOMContentLoaded', function () {
