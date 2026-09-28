@@ -1352,6 +1352,16 @@ body{color:var(--ink);background:#f6faf8}
 :root[data-theme="dark"] .booking-day { background:#14231e !important; border-color:#2b473e !important; color:#edf7f3 !important; }
 :root[data-theme="dark"] .booking-day.selected { background:#0a9d6c !important; border-color:#0a9d6c !important; color:#fff !important; }
 
+
+/* ---------- Profile and booking management ---------- */
+.cancel-btn { border:1px solid #e07a86; color:#c84657; background:transparent; border-radius:8px; padding:7px 10px; font:600 12px Inter,sans-serif; cursor:pointer; }
+.cancel-btn:hover { background:#fff0f2; }
+.badge-cancelled { background:#fff0f2; color:#b7354a; border:1px solid #f2bcc6; }
+.confirmed-bookings-card { border-left:3px solid var(--primary); }
+:root[data-theme="dark"] .cancel-btn { color:#ff9baa; border-color:#85404f; }
+:root[data-theme="dark"] .cancel-btn:hover { background:#351d25; }
+:root[data-theme="dark"] .badge-cancelled { background:#351d25 !important; color:#ffacb8 !important; border-color:#85404f !important; }
+
 </style>
 </head>
 <body>
@@ -1971,12 +1981,20 @@ body{color:var(--ink);background:#f6faf8}
     <h3 id="accountName">Not logged in</h3>
     <p class="muted" style="font-size:13.5px;margin-top:4px;" id="accountEmail"></p>
   </div>
-
   <div class="card" style="margin-bottom:24px;">
-    <h4 style="margin-bottom:14px;">My Bookings</h4>
-    <div id="accountBookingsList"><p class="muted" style="font-size:13.5px;">Log in to see your bookings.</p></div>
+    <div class="facility-card-head"><h4>Profile settings</h4><span class="muted" style="font-size:12px;">Keep your details up to date</span></div>
+    <div class="field"><label for="playerNameInput">Name</label><input id="playerNameInput" type="text" placeholder="Your name"></div>
+    <div class="field"><label for="playerPhoneInput">Phone</label><input id="playerPhoneInput" type="tel" placeholder="+91 98765 43210"></div>
+    <button class="btn btn-primary" type="button" onclick="savePlayerProfile()" style="width:auto;padding:10px 20px;">Save profile</button>
   </div>
-
+  <div class="card" style="margin-bottom:24px;">
+    <div class="facility-card-head"><h4>Upcoming reservations</h4><span class="badge badge-requested">Manage</span></div>
+    <div id="accountUpcomingList"><p class="muted" style="font-size:13.5px;">Log in to see your upcoming reservations.</p></div>
+  </div>
+  <div class="card" style="margin-bottom:24px;">
+    <h4 style="margin-bottom:14px;">Booking history</h4>
+    <div id="accountHistoryList"><p class="muted" style="font-size:13.5px;">Your completed and cancelled bookings will appear here.</p></div>
+  </div>
   <a href="#" data-nav="login" data-logout="true" class="btn btn-outline btn-block" style="border-color:var(--danger);color:var(--danger);">Log Out</a>
 
 </div>
@@ -2117,6 +2135,10 @@ body{color:var(--ink);background:#f6faf8}
     <div class="card">
       <div id="ownerBookingsList"><p class="muted" style="font-size:13.5px;">No booking requests yet. New player bookings will appear here.</p></div>
     </div>
+    <div class="card confirmed-bookings-card" style="margin-top:20px;">
+      <div class="facility-card-head"><div><h4>Confirmed bookings</h4><p class="muted" style="font-size:12px;margin-top:4px;">Review approved reservations for your venue.</p></div><span id="ownerConfirmedCount" class="badge badge-confirmed">0</span></div>
+      <div id="ownerConfirmedList"><p class="muted" style="font-size:13.5px;">No confirmed bookings yet.</p></div>
+    </div>
   </div>
 </div>
 
@@ -2175,6 +2197,7 @@ body{color:var(--ink);background:#f6faf8}
     <a href="#" data-nav="admin-dashboard" class="active">📊 Dashboard</a>
     <a href="#" data-nav="facility-approvals">✅ Facility Approvals</a>
     <a href="#" data-nav="user-management">👥 User Management</a>
+    <a href="#" data-nav="admin-bookings">📅 Booking Oversight</a>
     <a href="#" data-nav="reports-moderation">⚠️ Reports</a>
     <a href="#" data-nav="admin-profile">👤 Profile</a>
   </div>
@@ -2208,6 +2231,10 @@ body{color:var(--ink);background:#f6faf8}
         <span class="qicon">👥</span>
         <div><h5>User Management</h5><p>Search, ban or unban users</p></div>
       </a>
+      <a href="#" data-nav="admin-bookings" class="quick-link-card">
+        <span class="qicon">📅</span>
+        <div><h5>Booking Oversight</h5><p>Review all confirmed reservations</p></div>
+      </a>
       <a href="#" data-nav="reports-moderation" class="quick-link-card">
         <span class="qicon">⚠️</span>
         <div><h5>Reports &amp; Moderation</h5><p>View submitted reports</p></div>
@@ -2234,6 +2261,7 @@ body{color:var(--ink);background:#f6faf8}
     <a href="#" data-nav="admin-dashboard">📊 Dashboard</a>
     <a href="#" data-nav="facility-approvals" class="active">✅ Facility Approvals</a>
     <a href="#" data-nav="user-management">👥 User Management</a>
+    <a href="#" data-nav="admin-bookings">📅 Booking Oversight</a>
     <a href="#" data-nav="reports-moderation">⚠️ Reports</a>
     <a href="#" data-nav="admin-profile">👤 Profile</a>
   </div>
@@ -2321,6 +2349,28 @@ body{color:var(--ink);background:#f6faf8}
 
 </div>
 
+<div class="page-section" id="admin-bookings" style="display:none;">
+<nav class="navbar">
+  <a href="#" data-nav="admin-dashboard" class="logo">Court<span>Hub</span> <span style="font-size:12px;color:#9a9ab8;font-weight:500;">— Admin</span></a><span class="live-clock" data-live-clock="">07:41:45 AM</span>
+  <div class="navbar-links"><a href="#" data-nav="admin-profile" class="avatar" style="background:var(--ink-soft);">AD</a></div>
+</nav>
+<div class="panel-shell">
+  <div class="panel-sidebar">
+    <a href="#" data-nav="admin-dashboard">📊 Dashboard</a>
+    <a href="#" data-nav="facility-approvals">✅ Facility Approvals</a>
+    <a href="#" data-nav="user-management">👥 User Management</a>
+    <a href="#" data-nav="admin-bookings" class="active">📅 Booking Oversight</a>
+    <a href="#" data-nav="reports-moderation">⚠️ Reports</a>
+    <a href="#" data-nav="admin-profile">👤 Profile</a>
+  </div>
+  <div class="panel-main">
+    <h2>Booking oversight</h2>
+    <p class="muted" style="margin-top:6px;">Review all confirmed venue reservations across CourtHub.</p>
+    <div class="stat-grid mt-24"><div class="stat-card"><p class="stat-label">CONFIRMED</p><p class="stat-value" id="adminConfirmedCount">0</p></div><div class="stat-card"><p class="stat-label">UPCOMING</p><p class="stat-value" id="adminUpcomingCount">0</p></div><div class="stat-card"><p class="stat-label">BOOKING VALUE</p><p class="stat-value" id="adminConfirmedValue">₹0</p></div></div>
+    <div class="card mt-24"><div id="adminConfirmedBookingsList"><p class="muted" style="font-size:13.5px;">No confirmed bookings yet.</p></div></div>
+  </div>
+</div>
+</div>
 <div class="page-section" id="admin-profile" style="display:none;">
 
 
@@ -2336,6 +2386,7 @@ body{color:var(--ink);background:#f6faf8}
     <a href="#" data-nav="admin-dashboard">📊 Dashboard</a>
     <a href="#" data-nav="facility-approvals">✅ Facility Approvals</a>
     <a href="#" data-nav="user-management">👥 User Management</a>
+    <a href="#" data-nav="admin-bookings">📅 Booking Oversight</a>
     <a href="#" data-nav="reports-moderation">⚠️ Reports</a>
     <a href="#" data-nav="admin-profile" class="active">👤 Profile</a>
   </div>
@@ -2435,36 +2486,20 @@ body{color:var(--ink);background:#f6faf8}
   }
 
   function renderAccountPage() {
-    var nameEl = document.getElementById('accountName');
-    var emailEl = document.getElementById('accountEmail');
-    var avatarEl = document.getElementById('accountAvatar');
-    var listEl = document.getElementById('accountBookingsList');
-    if (!nameEl) return;
-
-    if (!currentUser) {
-      nameEl.textContent = 'Not logged in';
-      emailEl.textContent = '';
-      avatarEl.textContent = '?';
-      listEl.innerHTML = '<p class="muted" style="font-size:13.5px;">Log in to see your bookings.</p>';
-      return;
-    }
-
-    nameEl.textContent = currentUser.name;
-    emailEl.textContent = currentUser.email;
-    avatarEl.textContent = initials(currentUser.name);
-
-    var myBookings = appData.bookings.filter(function (b) { return b.userId === currentUser.id; });
-    if (myBookings.length === 0) {
-      listEl.innerHTML = '<p class="muted" style="font-size:13.5px;">No bookings yet — book a court to see it here.</p>';
-      return;
-    }
-    listEl.innerHTML = myBookings.map(function (b) {
-      return '<div class="list-row"><div><strong>' + b.venue + '</strong><br><span class="muted" style="font-size:13px;">' + b.court + '</span></div>' +
-        '<span class="muted" style="font-size:13px;">' + (b.date || 'Date TBD') + (b.slot ? (' · ' + b.slot) : '') + '</span>' +
-        '<span class="badge '+(b.status==='Confirmed'?'badge-confirmed':(b.status==='Rejected'?'badge-rejected':'badge-requested'))+'">' + b.status + '</span></div>';
-    }).join('');
+    var nameEl=document.getElementById('accountName'),emailEl=document.getElementById('accountEmail'),avatarEl=document.getElementById('accountAvatar'),upcomingEl=document.getElementById('accountUpcomingList'),historyEl=document.getElementById('accountHistoryList');
+    if(!nameEl)return;
+    if(!currentUser){nameEl.textContent='Not logged in';emailEl.textContent='';avatarEl.textContent='?';if(upcomingEl)upcomingEl.innerHTML='<p class="muted" style="font-size:13.5px;">Log in to see your upcoming reservations.</p>';if(historyEl)historyEl.innerHTML='<p class="muted" style="font-size:13.5px;">Your completed and cancelled bookings will appear here.</p>';return;}
+    nameEl.textContent=currentUser.name;emailEl.textContent=currentUser.email;avatarEl.textContent=initials(currentUser.name);
+    var nameInput=document.getElementById('playerNameInput'),phoneInput=document.getElementById('playerPhoneInput');if(nameInput)nameInput.value=currentUser.name||'';if(phoneInput)phoneInput.value=currentUser.phone||'';
+    var today=localDateKey(new Date()),mine=appData.bookings.filter(function(b){return b.userId===currentUser.id;});
+    var upcoming=mine.filter(function(b){return b.status==='Pending'||b.status==='Confirmed';}).filter(function(b){return !b.date||b.date>=today;}).sort(function(a,b){return String(a.date||'').localeCompare(String(b.date||''));});
+    var history=mine.filter(function(b){return !(b.status==='Pending'||b.status==='Confirmed')|| (b.date&&b.date<today);}).slice().reverse();
+    function row(b,canCancel){var statusClass=b.status==='Confirmed'?'badge-confirmed':(b.status==='Cancelled'?'badge-cancelled':(b.status==='Rejected'?'badge-rejected':'badge-requested'));var cancel=canCancel?'<button class="cancel-btn" onclick="cancelBooking(\''+b.id+'\')">Cancel</button>':'';return '<div class="list-row"><div><strong>'+escapeHtml(b.venue||'Venue')+'</strong><br><span class="muted" style="font-size:13px;">'+escapeHtml(b.court||'Court')+'</span></div><span class="muted" style="font-size:13px;">'+escapeHtml(b.date||'Date TBD')+(b.slot?(' · '+escapeHtml(b.slot)):'')+'</span><span class="badge '+statusClass+'">'+escapeHtml(b.status||'Pending')+'</span>'+cancel+'</div>';}
+    if(upcomingEl)upcomingEl.innerHTML=upcoming.length?upcoming.map(function(b){return row(b,true);}).join(''):'<p class="muted" style="font-size:13.5px;">No upcoming reservations.</p>';
+    if(historyEl)historyEl.innerHTML=history.length?history.map(function(b){return row(b,false);}).join(''):'<p class="muted" style="font-size:13.5px;">No booking history yet.</p>';
   }
-
+  function savePlayerProfile(){if(!currentUser){showToast('Please log in first');return;}var name=(document.getElementById('playerNameInput').value||'').trim();var phone=(document.getElementById('playerPhoneInput').value||'').trim();if(!name){showToast('Please enter your name');return;}currentUser.name=name;currentUser.phone=phone;appData.users=appData.users.map(function(u){return u.id===currentUser.id?currentUser:u;});saveData();renderAll();showToast('Profile saved');}
+  function cancelBooking(id){var b=appData.bookings.filter(function(x){return x.id===id&&x.userId===currentUser.id;})[0];if(!b||!(b.status==='Pending'||b.status==='Confirmed'))return;if(!confirm('Cancel this reservation?'))return;b.status='Cancelled';b.cancelledAt=new Date().toISOString();saveData();renderAll();showToast('Reservation cancelled');}
   function renderOwnerDashboard() {
     var bookingsEl = document.getElementById('ownerStatBookings');
     var earningsEl = document.getElementById('ownerStatEarnings');
@@ -2498,13 +2533,11 @@ body{color:var(--ink);background:#f6faf8}
 
 
   function renderOwnerBookings() {
-    var listEl = document.getElementById('ownerBookingsList'); if (!listEl) return;
-    if (appData.bookings.length === 0) { listEl.innerHTML = '<p class="muted" style="font-size:13.5px;">No booking requests yet. New player bookings will appear here.</p>'; return; }
-    listEl.innerHTML = appData.bookings.slice().reverse().map(function (b) {
-      var statusClass=b.status==='Confirmed'?'badge-confirmed':(b.status==='Rejected'?'badge-rejected':'badge-requested');
-      var actions=b.status==='Pending'?'<div class="booking-row-actions"><button class="approve-btn" onclick="updateBookingStatus(\''+b.id+'\',\'Confirmed\')">Approve</button><button class="reject-btn" onclick="updateBookingStatus(\''+b.id+'\',\'Rejected\')">Reject</button></div>':'';
-      return '<div class="list-row"><div><strong>'+b.userName+'</strong><br><span class="muted" style="font-size:13px;">'+b.venue+' · '+b.court+'</span></div><span class="muted" style="font-size:13px;">'+(b.date||'Date TBD')+(b.slot?(' · '+b.slot):'')+'</span><span class="badge '+statusClass+'">'+b.status+'</span>'+actions+'</div>';
-    }).join('');
+    var listEl=document.getElementById('ownerBookingsList'); if(!listEl)return;
+    var all=appData.bookings||[];
+    if(!all.length)listEl.innerHTML='<p class="muted" style="font-size:13.5px;">No booking requests yet. New player bookings will appear here.</p>';
+    else listEl.innerHTML=all.slice().reverse().map(function(b){var statusClass=b.status==='Confirmed'?'badge-confirmed':(b.status==='Cancelled'?'badge-cancelled':(b.status==='Rejected'?'badge-rejected':'badge-requested'));var actions=b.status==='Pending'?'<div class="booking-row-actions"><button class="approve-btn" onclick="updateBookingStatus(\''+b.id+'\',\'Confirmed\')">Approve</button><button class="reject-btn" onclick="updateBookingStatus(\''+b.id+'\',\'Rejected\')">Reject</button></div>':'';return '<div class="list-row"><div><strong>'+escapeHtml(b.userName||'Player')+'</strong><br><span class="muted" style="font-size:13px;">'+escapeHtml(b.venue||'Venue')+' · '+escapeHtml(b.court||'Court')+'</span></div><span class="muted" style="font-size:13px;">'+escapeHtml(b.date||'Date TBD')+(b.slot?(' · '+escapeHtml(b.slot)):'')+'</span><span class="badge '+statusClass+'">'+escapeHtml(b.status||'Pending')+'</span>'+actions+'</div>';}).join('');
+    var confirmed=all.filter(function(b){return b.status==='Confirmed';}),confirmedEl=document.getElementById('ownerConfirmedList'),countEl=document.getElementById('ownerConfirmedCount');if(countEl)countEl.textContent=confirmed.length;if(confirmedEl)confirmedEl.innerHTML=confirmed.length?confirmed.slice().reverse().map(function(b){return '<div class="list-row"><div><strong>'+escapeHtml(b.userName||'Player')+'</strong><br><span class="muted" style="font-size:13px;">'+escapeHtml(b.venue||'Venue')+' · '+escapeHtml(b.court||'Court')+'</span></div><span class="muted" style="font-size:13px;">'+escapeHtml(b.date||'Date TBD')+(b.slot?(' · '+escapeHtml(b.slot)):'')+'</span><span class="badge badge-confirmed">Confirmed</span></div>';}).join(''):'<p class="muted" style="font-size:13.5px;">No confirmed bookings yet.</p>';
     renderOwnerAnalytics();
   }
   function updateBookingStatus(id,status){var b=appData.bookings.filter(function(x){return x.id===id;})[0];if(!b)return;b.status=status;saveData();renderOwnerBookings();renderOwnerDashboard();showToast(status==='Confirmed'?'Booking approved':'Booking rejected');}
@@ -2525,6 +2558,7 @@ body{color:var(--ink);background:#f6faf8}
     bookingsEl.textContent = appData.bookings.length;
   }
 
+  function renderAdminBookings(){var list=document.getElementById('adminConfirmedBookingsList');if(!list)return;var confirmed=(appData.bookings||[]).filter(function(b){return b.status==='Confirmed';}).slice().reverse();var upcoming=confirmed.filter(function(b){return !b.date||b.date>=localDateKey(new Date());});var value=confirmed.reduce(function(sum,b){return sum+(parseFloat(b.amount)||0);},0);var c=document.getElementById('adminConfirmedCount'),u=document.getElementById('adminUpcomingCount'),v=document.getElementById('adminConfirmedValue');if(c)c.textContent=confirmed.length;if(u)u.textContent=upcoming.length;if(v)v.textContent='₹'+value.toLocaleString('en-IN');list.innerHTML=confirmed.length?confirmed.map(function(b){return '<div class="list-row"><div><strong>'+escapeHtml(b.userName||'Player')+'</strong><br><span class="muted" style="font-size:13px;">'+escapeHtml(b.venue||'Venue')+' · '+escapeHtml(b.court||'Court')+'</span></div><span class="muted" style="font-size:13px;">'+escapeHtml(b.date||'Date TBD')+(b.slot?(' · '+escapeHtml(b.slot)):'')+'</span><span class="badge badge-confirmed">Confirmed</span><strong>₹'+escapeHtml(String(b.amount||0))+'</strong></div>';}).join(''):'<p class="muted" style="font-size:13.5px;">No confirmed bookings yet.</p>';}
   function renderUserManagement() {
     var table = document.getElementById('userManagementTable');
     var noMsg = document.getElementById('noUsersMsg');
@@ -2596,6 +2630,7 @@ body{color:var(--ink);background:#f6faf8}
     renderFacilityDetails();
     renderOwnerCourts();
     renderAdminDashboard();
+    renderAdminBookings();
     renderUserManagement();
   }
 
@@ -2616,6 +2651,7 @@ body{color:var(--ink);background:#f6faf8}
     if (id === 'manage-facility') { renderFacilityDetails(); renderOwnerCourts(); }
     if (id === 'owner-bookings') renderOwnerBookings();
     if (id === 'admin-dashboard') renderAdminDashboard();
+    if (id === 'admin-bookings') renderAdminBookings();
     if (id === 'user-management') renderUserManagement();
   }
 
