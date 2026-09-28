@@ -1337,6 +1337,21 @@ body{color:var(--ink);background:#f6faf8}
 .auth-panel > .theme-toggle { position:absolute !important; top:18px !important; right:18px !important; }
 .navbar .theme-toggle { order: 0; }
 
+
+/* ---------- Booking calendar ---------- */
+.booking-calendar { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:7px; margin-top:8px; }
+.booking-day { border:1px solid var(--border); border-radius:10px; background:var(--surface); color:var(--ink); padding:9px 4px; min-height:62px; cursor:pointer; text-align:center; font:inherit; transition:transform .15s,border-color .15s,background .15s; }
+.booking-day:hover { transform:translateY(-1px); border-color:var(--primary); }
+.booking-day .day-name { display:block; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+.booking-day .day-number { display:block; font-size:16px; font-weight:800; margin-top:4px; }
+.booking-day .day-month { display:block; font-size:10px; color:var(--muted); margin-top:2px; }
+.booking-day.selected { background:var(--primary); border-color:var(--primary); color:#fff; box-shadow:0 7px 16px rgba(11,191,123,.2); }
+.booking-day.selected .day-name,.booking-day.selected .day-month { color:rgba(255,255,255,.82); }
+.booking-day.today:not(.selected) { border-color:var(--primary); }
+@media(max-width:520px) { .booking-calendar { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+:root[data-theme="dark"] .booking-day { background:#14231e !important; border-color:#2b473e !important; color:#edf7f3 !important; }
+:root[data-theme="dark"] .booking-day.selected { background:#0a9d6c !important; border-color:#0a9d6c !important; color:#fff !important; }
+
 </style>
 </head>
 <body>
@@ -1809,9 +1824,9 @@ body{color:var(--ink);background:#f6faf8}
       </select>
     </div>
 
-    <div class="live-date-card">● <strong>Live availability</strong> · <span id="bookingTodayLabel">Monday, September 28, 2026</span> · local time <span id="bookingLiveTime">07:41:45 AM</span></div>
-    <div class="field"><label for="date">Booking date</label><input type="text" id="date" name="date" value="Today (live)" readonly="" aria-readonly="true"><input type="hidden" id="bookingDateKey" name="booking_date" value="2026-09-28"><small class="muted" style="display:block;margin-top:6px;font-size:12px;">Only today’s live date is available. Past dates are hidden.</small></div>
-    <div class="field"><label>Available slots right now</label><div id="liveSlotGrid" class="slot-grid"><div class="slot live-available selected" data-hour="8">8 AM</div><div class="slot live-available " data-hour="9">9 AM</div><div class="slot live-available " data-hour="10">10 AM</div><div class="slot live-available " data-hour="11">11 AM</div><div class="slot live-available " data-hour="12">12 PM</div><div class="slot live-available " data-hour="13">1 PM</div><div class="slot live-available " data-hour="14">2 PM</div><div class="slot live-available " data-hour="15">3 PM</div><div class="slot live-available " data-hour="16">4 PM</div><div class="slot live-available " data-hour="17">5 PM</div><div class="slot live-available " data-hour="18">6 PM</div><div class="slot live-available " data-hour="19">7 PM</div><div class="slot live-available " data-hour="20">8 PM</div><div class="slot live-available " data-hour="21">9 PM</div></div></div>
+    <div class="live-date-card">● <strong>Availability updates live</strong> · <span id="bookingTodayLabel">Monday, September 28, 2026</span> · local time <span id="bookingLiveTime">07:41:45 AM</span></div>
+    <div class="field"><label>Choose a booking date</label><div id="bookingCalendar" class="booking-calendar" aria-label="Choose a booking date"></div><input type="text" id="date" name="date" value="Today (live)" readonly="" aria-readonly="true"><input type="hidden" id="bookingDateKey" name="booking_date" value="2026-09-28"><small class="muted" style="display:block;margin-top:6px;font-size:12px;">Choose today or any of the next 6 days. Past dates are hidden.</small></div>
+    <div class="field"><label>Available slots</label><div id="liveSlotGrid" class="slot-grid"><div class="slot live-available selected" data-hour="8">8 AM</div><div class="slot live-available " data-hour="9">9 AM</div><div class="slot live-available " data-hour="10">10 AM</div><div class="slot live-available " data-hour="11">11 AM</div><div class="slot live-available " data-hour="12">12 PM</div><div class="slot live-available " data-hour="13">1 PM</div><div class="slot live-available " data-hour="14">2 PM</div><div class="slot live-available " data-hour="15">3 PM</div><div class="slot live-available " data-hour="16">4 PM</div><div class="slot live-available " data-hour="17">5 PM</div><div class="slot live-available " data-hour="18">6 PM</div><div class="slot live-available " data-hour="19">7 PM</div><div class="slot live-available " data-hour="20">8 PM</div><div class="slot live-available " data-hour="21">9 PM</div></div></div>
     <a href="#" data-nav="confirm-payment" id="continueToConfirm" class="btn btn-primary mt-24">Continue</a>
   </div>
 
@@ -2387,6 +2402,7 @@ body{color:var(--ink);background:#f6faf8}
   saveData();
 
   var currentUser = null;
+  var selectedBookingDate = '';
   var pendingBooking = null;
   var lastBooking = null;
 
@@ -2908,13 +2924,39 @@ body{color:var(--ink);background:#f6faf8}
   function slotLabel(hour){var h=hour%12||12;return h+' '+(hour<12?'AM':'PM');}
   function liveSlotHours(){return [6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21];}
   function renderLiveClock(){var now=new Date();document.querySelectorAll('[data-live-clock]').forEach(function(e){e.textContent=prettyTime(now);});var t=document.getElementById('bookingLiveTime');if(t)t.textContent=prettyTime(now);var label=document.getElementById('bookingTodayLabel');if(label)label.textContent=prettyToday(now);}
+  function renderBookingCalendar(){
+    var calendar=document.getElementById('bookingCalendar'),keyInput=document.getElementById('bookingDateKey');
+    if(!calendar||!keyInput)return;
+    var now=new Date(),today=localDateKey(now),chosen=keyInput.value||selectedBookingDate||today;
+    if(chosen<today)chosen=today;
+    selectedBookingDate=chosen; keyInput.value=chosen;
+    var base=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    calendar.innerHTML=Array.from({length:7},function(_,i){
+      var d=new Date(base); d.setDate(base.getDate()+i); var key=localDateKey(d);
+      var selected=key===chosen?' selected':''; var todayClass=key===today?' today':'';
+      return '<button type="button" class="booking-day'+selected+todayClass+'" onclick="selectBookingDate(\''+key+'\')"><span class="day-name">'+d.toLocaleDateString(undefined,{weekday:'short'})+'</span><span class="day-number">'+d.getDate()+'</span><span class="day-month">'+d.toLocaleDateString(undefined,{month:'short'})+'</span></button>';
+    }).join('');
+  }
+  function selectBookingDate(key){
+    selectedBookingDate=key;
+    var input=document.getElementById('bookingDateKey'); if(input)input.value=key;
+    renderLiveBookingSlots();
+  }
   function renderLiveBookingSlots(){
     var input=document.getElementById('date'),keyInput=document.getElementById('bookingDateKey'),grid=document.getElementById('liveSlotGrid');
     if(!input||!grid)return;
-    var now=new Date(),today=localDateKey(now);
-    input.value=prettyToday(now)+' (Today)'; if(keyInput)keyInput.value=today;
-    var next=now.getHours()+(now.getMinutes()>0?1:0),available=liveSlotHours().filter(function(h){return h>=next;});
-    if(!available.length){grid.innerHTML='<div class="no-live-slots">No slots remaining today. Live availability will reset tomorrow.</div>';return;}
+    var now=new Date(),today=localDateKey(now),chosen=(keyInput&&keyInput.value)||selectedBookingDate||today;
+    if(chosen<today)chosen=today;
+    selectedBookingDate=chosen; if(keyInput)keyInput.value=chosen;
+    var selectedDate=new Date(chosen+'T12:00:00');
+    input.value=prettyToday(selectedDate)+(chosen===today?' (Today)':'');
+    renderBookingCalendar();
+    var next=chosen===today ? now.getHours()+(now.getMinutes()>0?1:0) : 6;
+    var venueName=(currentVenue&&currentVenue.name)||'Game Point Arena';
+    var booked={};
+    (appData.bookings||[]).forEach(function(b){if(b.venue===venueName&&b.date===chosen&&b.slot)booked[b.slot]=true;});
+    var available=liveSlotHours().filter(function(h){return h>=next&& !booked[slotLabel(h)];});
+    if(!available.length){grid.innerHTML='<div class="no-live-slots">No slots are available for this date. Choose another day.</div>';return;}
     grid.innerHTML=available.map(function(h,i){return '<div class="slot live-available '+(i===0?'selected':'')+'" data-hour="'+h+'">'+slotLabel(h)+'</div>';}).join('');
     grid.querySelectorAll('.slot').forEach(function(slot){slot.addEventListener('click',function(){grid.querySelectorAll('.slot').forEach(function(x){x.classList.remove('selected');});this.classList.add('selected');});});
   }
