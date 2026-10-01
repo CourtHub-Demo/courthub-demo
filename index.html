@@ -1398,74 +1398,10 @@ body{color:var(--ink);background:#f6faf8}
 .live-facility-banner .live-badge{display:inline-flex;align-items:center;gap:7px;color:var(--accent-dark);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.08em}.live-facility-banner .live-badge:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px rgba(39,201,138,.14)}
 .live-facility-banner h3{font-size:17px;margin:3px 0}.live-facility-banner p{margin:0;color:var(--muted);font-size:12.5px}.live-facility-banner .btn{width:auto;padding:9px 12px;font-size:12px}
 
-
-/* CourtHub sprint refresh — confident court-side energy, clear contrast, real photo moments. */
-#home .navbar { background:rgba(8,23,27,.94); border-bottom:1px solid rgba(255,255,255,.09); box-shadow:0 8px 30px rgba(8,23,27,.14); backdrop-filter:blur(14px); }
-#home .navbar .logo { color:#fff; }
-#home .navbar-links a:not(.avatar) { color:rgba(255,255,255,.82); }
-#home .navbar-links a.nav-signin { font-weight:800; color:#fff; }
-#home .navbar-links a.nav-list-venue { padding:10px 15px; color:#fff; border-radius:999px; box-shadow:none; }
-#home .hero { position:relative; display:flex; align-items:center; min-height:500px; padding:76px 0 104px; overflow:hidden; background-color:#102c2c; background-image:linear-gradient(90deg,rgba(6,22,25,.96) 0%,rgba(6,22,25,.83) 44%,rgba(6,22,25,.18) 100%),url('assets/courthub-hero.webp'); background-position:center,62% center; background-size:cover,cover; }
-#home .hero::after { content:""; position:absolute; inset:auto -10% -35% 42%; height:55%; background:radial-gradient(ellipse,rgba(255,91,54,.18),transparent 67%); pointer-events:none; }
-#home .hero .container-wide { position:relative; z-index:1; width:100%; }
-#home .hero-copy { max-width:730px; color:#fff; }
-#home .hero-kicker { display:inline-flex; align-items:center; gap:9px; padding:9px 13px; border:1px solid rgba(255,255,255,.22); border-radius:999px; background:rgba(11,33,34,.52); color:#d3ff82; font-size:11px; font-weight:900; letter-spacing:.15em; }
-#home .hero-kicker::before { content:""; width:8px; height:8px; border-radius:50%; background:#caff69; box-shadow:0 0 0 5px rgba(202,255,105,.14); }
-#home .hero h1 { max-width:720px; margin:22px 0 14px; color:#fff; font-size:clamp(44px,7vw,82px); line-height:.98; font-weight:900; letter-spacing:-.065em; text-wrap:balance; }
-#home .hero h1 span { color:#caff69; }
-#home .hero p { max-width:570px; color:rgba(255,255,255,.84); font-size:clamp(15px,1.5vw,18px); line-height:1.65; }
-#home .hero .search-bar { max-width:635px; margin-top:26px; padding:7px; border:1px solid rgba(255,255,255,.5); border-radius:16px; background:#fff; box-shadow:0 18px 48px rgba(0,0,0,.24); }
-#home .hero .search-bar input { min-width:0; border:0; background:transparent; }
-#home .hero .search-bar .btn { min-height:48px; border-radius:11px; font-weight:800; white-space:nowrap; }
-#home .hero .location-strip { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-top:17px; color:rgba(255,255,255,.88); }
-#home .hero .location-strip strong { color:#fff; }
-#home .hero .location-btn { color:#fff; }
-#home .hero .city-select { background:rgba(7,23,25,.5); color:#fff; border-color:rgba(255,255,255,.3); }
-#home .demo-note { flex-basis:100%; margin-left:18px; color:rgba(255,255,255,.69); font-size:11px; letter-spacing:.01em; }
-#home .venue-grid-hero { margin-top:-54px; }
-#home .venue-grid-hero .venue-card { border:1px solid rgba(10,30,35,.08); border-radius:18px; overflow:hidden; box-shadow:0 16px 38px rgba(10,30,35,.14); transition:transform .2s ease,box-shadow .2s ease; }
-#home .venue-grid-hero .venue-card:hover { transform:translateY(-5px); box-shadow:0 22px 46px rgba(10,30,35,.2); }
-#home .venue-grid-hero .thumb { min-height:178px; background-position:center 42% !important; }
-#login .auth-brand { background-image:linear-gradient(180deg,rgba(4,36,34,.68),rgba(4,36,34,.88)),url('assets/courthub-futsal.webp'); background-size:cover; background-position:center; }
-#login .brand-art { opacity:.2; }
-#login .brand-stats strong { color:#d3ff82; }
-@media (max-width:760px) {
-  #home .navbar-links { gap:12px; }
-  #home .navbar-links a.nav-list-venue { padding:9px 11px; font-size:12px; }
-  #home .hero { min-height:570px; padding:66px 0 94px; background-image:linear-gradient(90deg,rgba(6,22,25,.9),rgba(6,22,25,.58)),url('assets/courthub-hero.webp'); background-position:center,62% center; }
-  #home .hero h1 { font-size:clamp(44px,11vw,68px); }
-  #home .venue-grid-hero { margin-top:-42px; }
-}
-@media (max-width:520px) {
-  #home .navbar { padding-left:15px; padding-right:15px; }
-  #home .navbar-links { gap:9px; }
-  #home .navbar-links a.nav-signin { font-size:13px; }
-  #home .navbar-links a.nav-list-venue { padding:8px 10px; font-size:11px; }
-  #home .hero { min-height:590px; padding:58px 0 92px; }
-  #home .hero .search-bar { display:flex; gap:4px; }
-  #home .hero .search-bar input { padding:12px 9px; font-size:13px; }
-  #home .hero .search-bar .btn { padding:11px 12px !important; font-size:12px; }
-  #home .hero .location-strip { gap:8px; font-size:12px; }
-  #home .demo-note { margin-left:0; }
-}
-
-
-/* The legacy theme declares .hero background with !important; explicitly layer the photo above it. */
-#home .hero { background-image:linear-gradient(90deg,rgba(6,22,25,.88) 0%,rgba(6,22,25,.7) 44%,rgba(6,22,25,.06) 100%),url('assets/courthub-hero.webp') !important; background-size:cover,cover !important; background-position:center,62% center !important; background-repeat:no-repeat !important; }
-@media (max-width:760px) { #home .hero { background-image:linear-gradient(90deg,rgba(6,22,25,.88),rgba(6,22,25,.48)),url('assets/courthub-hero.webp') !important; background-size:cover,cover !important; background-position:center,62% center !important; } }
-
-
-/* Final high-priority refresh overrides the older demo theme's !important background. */
-#home .hero { background-image:linear-gradient(90deg,rgba(6,22,25,.88) 0%,rgba(6,22,25,.7) 44%,rgba(6,22,25,.06) 100%),url('assets/courthub-hero.webp') !important; background-size:cover,cover !important; background-position:center,62% center !important; background-repeat:no-repeat !important; }
-@media (max-width:760px) { #home .hero { background-image:linear-gradient(90deg,rgba(6,22,25,.88),rgba(6,22,25,.48)),url('assets/courthub-hero.webp') !important; background-size:cover,cover !important; background-position:center,62% center !important; } }
-#login .auth-back-link { display:inline-flex; margin:0 0 12px; color:var(--primary); font-size:12px; font-weight:800; text-decoration:none; }
-#login .auth-back-link:hover { text-decoration:underline; }
-@media (max-width:520px) { #home .navbar-links a[data-nav="home"], #home .navbar-links .avatar { display:none; } }
-
 </style>
 </head>
 <body>
-<div class="page-section" id="login" style="display:none;">
+<div class="page-section" id="login" style="display:block;">
 
 
 <div class="auth-wrap">
@@ -1539,16 +1475,15 @@ body{color:var(--ink);background:#f6faf8}
     </div>
 
     <div class="brand-stats">
-      <div><strong>PLAY</strong><span>Pick your sport</span></div>
-      <div><strong>BOOK</strong><span>Choose your court</span></div>
-      <div><strong>GO</strong><span>Game on</span></div>
+      <div><strong>500+</strong><span>Venues listed</span></div>
+      <div><strong>10K+</strong><span>Bookings made</span></div>
+      <div><strong>4.7★</strong><span>Average rating</span></div>
     </div>
   </div>
 
   <!-- Right: Form panel -->
   <div class="auth-panel">
     <div class="auth-card">
-      <a href="#" data-nav="home" class="auth-back-link">← Browse courts first</a>
       <p class="kicker">WELCOME BACK</p>
       <h2 class="heading">Log in to CourtHub</h2>
       <p class="muted" style="font-size:14px;">Enter your details to keep booking courts.</p>
@@ -1604,16 +1539,14 @@ body{color:var(--ink);background:#f6faf8}
     </div></div>
 </div>
 
-<div class="page-section" id="home" style="display:block;">
+<div class="page-section" id="home" style="display:none;">
 
 
 <nav class="navbar">
   <a href="#" data-nav="home" class="logo">Court<span>Hub</span></a>
   <div class="navbar-links">
     <a href="#" data-nav="home">Home</a>
-    <a href="#" data-nav="venues">Courts</a>
-    <a href="#" data-nav="login" class="nav-signin">Log in</a>
-    <a href="#" data-nav="court-interest" class="btn btn-primary nav-list-venue">List your venue</a>
+    <a href="#" data-nav="venues">Venues</a>
     <a href="#" data-nav="account" class="avatar" data-player-avatar="1">?</a>
   </div>
 </nav>
@@ -1621,14 +1554,14 @@ body{color:var(--ink);background:#f6faf8}
 <section class="hero">
   <div class="container-wide">
     <div class="hero-copy">
-      <div class="hero-kicker">YOUR NEXT MATCH STARTS HERE</div>
-      <h1>Find your court.<br><span>Own the moment.</span></h1>
-      <p>From quick rallies to full-team kickabouts, find a place to play, pick a slot and get your crew in the game.</p>
+      <div class="hero-kicker">Live court discovery</div>
+      <h1>Find your next game, wherever you are.</h1>
+      <p>Discover verified badminton courts, football turfs, cricket nets and more — with real-time location-based search.</p>
       <div class="search-bar">
-        <input id="homeSearch" type="text" placeholder="Try badminton, football, tennis or your area" autocomplete="off">
-        <button class="btn btn-primary" style="width:auto;padding:12px 24px;" onclick="applyDiscoverySearch()">Find a court</button>
+        <input id="homeSearch" type="text" placeholder="Search venues, sports or areas..." autocomplete="off">
+        <button class="btn btn-primary" style="width:auto;padding:12px 24px;" onclick="applyDiscoverySearch()">Search</button>
       </div>
-      <div class="location-strip"><span class="live-dot"></span><span>Showing venues near <strong id="activeLocation">Ahmedabad</strong></span><button class="location-btn" onclick="useMyLocation()">⌖ Use my location</button><select id="citySelect" class="city-select" onchange="setCity(this.value)"><option>Ahmedabad</option><option>Mumbai</option><option>Delhi</option><option>Bengaluru</option><option>Pune</option><option>Hyderabad</option></select></div><div class="demo-note">Demo preview · venue listings, ratings and booking activity are sample content.</div>
+      <div class="location-strip"><span class="live-dot"></span><span>Showing venues near <strong id="activeLocation">Ahmedabad</strong></span><button class="location-btn" onclick="useMyLocation()">⌖ Use my location</button><select id="citySelect" class="city-select" onchange="setCity(this.value)"><option>Ahmedabad</option><option>Mumbai</option><option>Delhi</option><option>Bengaluru</option><option>Pune</option><option>Hyderabad</option></select></div>
     </div>
   </div>
 </section>
@@ -1688,39 +1621,39 @@ body{color:var(--ink);background:#f6faf8}
     <a href="#" data-nav="venues" class="sport-card">
       <span class="sport-icon">🏸</span>
       <h5>Badminton</h5>
-      <span>Ready to rally</span>
+      <span>120+ venues</span>
     </a>
     <a href="#" data-nav="venues" class="sport-card">
       <span class="sport-icon">⚽</span>
       <h5>Football</h5>
-      <span>Get on the turf</span>
+      <span>95+ venues</span>
     </a>
     <a href="#" data-nav="venues" class="sport-card">
       <span class="sport-icon">🏏</span>
       <h5>Cricket</h5>
-      <span>Find your nets</span>
+      <span>80+ venues</span>
     </a>
     <a href="#" data-nav="venues" class="sport-card">
       <span class="sport-icon">🎾</span>
       <h5>Tennis</h5>
-      <span>Serve it up</span>
+      <span>60+ venues</span>
     </a>
     <a href="#" data-nav="venues" class="sport-card">
       <span class="sport-icon">🏀</span>
       <h5>Basketball</h5>
-      <span>Bring your team</span>
+      <span>45+ venues</span>
     </a>
     <a href="#" data-nav="venues" class="sport-card">
       <span class="sport-icon">🏊</span>
       <h5>Swimming</h5>
-      <span>Dive right in</span>
+      <span>30+ venues</span>
     </a>
   </div>
 
   <div class="section-head">
     <div>
       <h3>Popular Venues</h3>
-      <p class="section-sub">A quick look at sample courts in the CourtHub demo</p>
+      <p class="section-sub">Highly rated courts booked by players near you</p>
     </div>
     <a href="#" data-nav="venues" class="see-all">See all →</a>
   </div>
@@ -3020,7 +2953,7 @@ body{color:var(--ink);background:#f6faf8}
     {name:'Hyderabad Turf Co.',photo:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAwIDcwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjEiIHgyPSIxIiB5Mj0iMCI+PHN0b3Agc3RvcC1jb2xvcj0iIzEyM2I3NCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzJjOWJkMSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjcwMCIgZmlsbD0idXJsKCNnKSIvPjxwYXRoIGQ9Ik05MCA4MGgxMDIwdjU0MEg5MHpNNjAwIDgwdjU0ME05MCAzNTBoMTAyME05MCAyMjBoMjEwdjI2MEg5ME0xMTEwIDIyMEg5MDB2MjYwaDIxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTdmN2ZmIiBzdHJva2Utb3BhY2l0eT0iLjY4IiBzdHJva2Utd2lkdGg9IjgiLz48Y2lyY2xlIGN4PSI2MDAiIGN5PSIzNTAiIHI9IjgyIiBmaWxsPSJub25lIiBzdHJva2U9IiNlN2Y3ZmYiIHN0cm9rZS1vcGFjaXR5PSIuNTgiIHN0cm9rZS13aWR0aD0iNyIvPjxwYXRoIGQ9Ik01NjAgMzEwbDQyLTI4IDQ0IDI4LTE2IDUwaC01NXoiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjkyIi8+PHBhdGggZD0iTTU2MCAzMTBsLTE4LTM4TTY0NiAzMTBsMjgtMzBNNjMwIDM2MGwyNiA0Mk01NzUgMzYwbC0zMCAzNSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==',sport:'Football',city:'Hyderabad',area:'Gachibowli',price:750,rating:4.4,icon:'⚽',grad:'linear-gradient(135deg,#872d3c,#2a1830)',badge:'Popular'}
   ];
   function escapeHtml(v){ return String(v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c];}); }
-  function venueCard(v){ var photoMap={'Game Point Arena':'assets/courthub-hero.webp','Skyline Sports Club':'assets/courthub-futsal.webp','Turf 22':'assets/courthub-cricket.webp','Prime Courts':'assets/courthub-tennis.webp'}; var photo=photoMap[v.name]||v.photo; return '<div class="venue-card card-shadow"><span class="venue-badge">'+escapeHtml(v.badge)+'</span><div class="thumb" style="background-image:url(\''+photo+'\');background-size:cover;background-position:center;">'+v.icon+'<span class="thumb-label">'+escapeHtml(v.area)+', '+escapeHtml(v.city)+'</span></div><div class="body"><span class="sport-tag">'+escapeHtml(v.sport)+'</span><h4>'+escapeHtml(v.name)+'</h4><div class="meta"><span>'+escapeHtml(v.area)+', '+escapeHtml(v.city)+'</span><span class="rating">★ '+v.rating+'</span></div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span class="price-tag">₹'+v.price+' <span>/ hr</span></span><span class="muted" style="font-size:12px;">● Available</span></div><div class="card-actions"><button class="btn btn-outline" onclick="openVenue(\''+escapeHtml(v.name).replace(/'/g,"\\'")+'\')">Details</button><button class="btn btn-primary" onclick="quickBook(\''+escapeHtml(v.name).replace(/'/g,"\\'")+'\')">Book</button></div></div></div>'; }
+  function venueCard(v){ return '<div class="venue-card card-shadow"><span class="venue-badge">'+escapeHtml(v.badge)+'</span><div class="thumb" style="background-image:url(\''+v.photo+'\');background-size:cover;background-position:center;">'+v.icon+'<span class="thumb-label">'+escapeHtml(v.area)+', '+escapeHtml(v.city)+'</span></div><div class="body"><span class="sport-tag">'+escapeHtml(v.sport)+'</span><h4>'+escapeHtml(v.name)+'</h4><div class="meta"><span>'+escapeHtml(v.area)+', '+escapeHtml(v.city)+'</span><span class="rating">★ '+v.rating+'</span></div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span class="price-tag">₹'+v.price+' <span>/ hr</span></span><span class="muted" style="font-size:12px;">● Available</span></div><div class="card-actions"><button class="btn btn-outline" onclick="openVenue(\''+escapeHtml(v.name).replace(/'/g,"\\'")+'\')">Details</button><button class="btn btn-primary" onclick="quickBook(\''+escapeHtml(v.name).replace(/'/g,"\\'")+'\')">Book</button></div></div></div>'; }
   function renderDiscoveryVenues(){
     var grid=document.getElementById('venueGrid'); if(!grid) return;
     var q=discoveryQuery.toLowerCase();
@@ -3106,11 +3039,6 @@ body{color:var(--ink);background:#f6faf8}
   function refreshLiveAvailability(){renderLiveClock();var page=document.getElementById('select-court');if(page&&page.style.display!=='none')renderLiveBookingSlots();}
   document.addEventListener('DOMContentLoaded',function(){renderLiveBookingSlots();renderLiveClock();setInterval(refreshLiveAvailability,1000);});
 
-
-  document.addEventListener('DOMContentLoaded',function(){
-    var featuredPhotos=['assets/courthub-hero.webp','assets/courthub-futsal.webp','assets/courthub-cricket.webp'];
-    document.querySelectorAll('#home .venue-grid-hero .venue-card .thumb').forEach(function(el,index){if(featuredPhotos[index])el.style.setProperty('background-image','url("'+featuredPhotos[index]+'")','important');});
-  });
 </script>
 
 <div id="toast" class="toast"></div>

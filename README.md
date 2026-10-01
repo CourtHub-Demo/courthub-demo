@@ -1,16 +1,14 @@
 # CourtHub
 
-GitHub Pages-ready static prototype for CourtHub.
+GitHub Pages-ready static demo for CourtHub.
 
 ## Trying the demo
 
-- Browse the sample courts without signing in.
-- Use **Log in → Sign Up** to create a test player account in this browser.
-- Use **List your venue** to explore the sample venue-owner registration flow.
+- There are no preloaded demo accounts. Use **Sign Up** to create a local player account, or **Register your court** to try the venue-owner flow.
+- Accounts and demo data are stored in this browser only; they do not sync across browsers or devices.
 
 ## Prototype limitations
 
-- Sample users, venue listings, reviews and reservations live in this browser's `localStorage`; they are not shared between people or devices.
-- There are no preloaded demo accounts, shared database, server-backed authentication, or real-time reservation locks.
-- Checkout is only a UI prototype. It does not process payments or store payment credentials. Do not enter real payment details.
-- Email/SMS actions prepare a message in the visitor's own mail or messaging app; they do not send automated notifications.
+- This is a static prototype with no shared database, server-backed authentication, or cross-user booking lock.
+- Checkout is a UI demo; it does not process payments. Do not enter real payment details.
+- Email and SMS actions open the visitor's own mail or messaging app; they do not send automated notifications.
