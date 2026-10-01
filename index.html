@@ -1373,6 +1373,25 @@ body{color:var(--ink);background:#f6faf8}
 .notification-footnote { color:var(--muted); font-size:11px; line-height:1.45; margin-top:11px; }
 :root[data-theme="dark"] .notification-card { background:#14231e !important; border-color:#2b473e !important; }
 
+
+/* ---------- Unified login + venue registration ---------- */
+.unified-login-note{display:flex;gap:10px;align-items:flex-start;background:linear-gradient(135deg,rgba(103,87,245,.09),rgba(39,201,138,.10));border:1px solid rgba(103,87,245,.18);border-radius:14px;padding:14px;margin:20px 0 0;text-align:left}
+.unified-login-note .note-icon{font-size:22px;line-height:1}
+.unified-login-note strong{display:block;font-size:13px;margin-bottom:3px}
+.unified-login-note p{font-size:12px;color:var(--muted);line-height:1.45;margin:0 0 9px}
+.unified-login-note .btn{width:auto;padding:8px 11px;font-size:11.5px}
+.registration-page{background:radial-gradient(circle at 8% 0%,rgba(103,87,245,.12),transparent 30%),var(--bg);min-height:100vh}
+.registration-shell{max-width:760px;margin:0 auto;padding:34px 22px 64px}
+.registration-header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:24px}
+.registration-header .logo{font-family:Poppins,sans-serif;font-size:22px;font-weight:700}.registration-header .logo span{color:var(--primary)}
+.registration-header .btn{width:auto;padding:9px 13px;font-size:12px}
+.registration-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow);padding:28px}
+.registration-card h2{font-size:26px}.registration-card .lead{color:var(--muted);font-size:13.5px;margin:7px 0 24px;line-height:1.55}
+.registration-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.registration-grid .full{grid-column:1/-1}
+.registration-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}.registration-actions .btn{width:auto}
+.registration-progress{display:flex;gap:8px;align-items:center;margin-bottom:18px;color:var(--muted);font-size:11px;font-weight:700}.registration-progress span{padding:6px 9px;border-radius:999px;background:var(--bg)}.registration-progress .active{background:var(--primary);color:#fff}
+@media(max-width:620px){.registration-grid{grid-template-columns:1fr}.registration-grid .full{grid-column:auto}.registration-card{padding:20px}.registration-header{align-items:flex-start}}
+
 </style>
 </head>
 <body>
@@ -1463,105 +1482,55 @@ body{color:var(--ink);background:#f6faf8}
       <h2 class="heading">Log in to CourtHub</h2>
       <p class="muted" style="font-size:14px;">Enter your details to keep booking courts.</p>
 
-      <div class="role-tabs">
-        <button id="roleTabPlayer" class="active" onclick="selectRole('player')" data-manus_clickable="true" data-manus_click_id="1">🏸 Player</button>
-        <button id="roleTabOwner" onclick="selectRole('owner')" data-manus_clickable="true" data-manus_click_id="2">🏟 Owner</button>
-        <button id="roleTabAdmin" onclick="selectRole('admin')" data-manus_clickable="true" data-manus_click_id="3">🛡️ Admin</button>
-      </div>
-
-      <div id="rolePlayer" class="role-panel active">
       <div class="auth-tabs">
-        <button id="tabLogin" class="active" onclick="showForm('login')" data-manus_clickable="true" data-manus_click_id="4">Log In</button>
-        <button id="tabSignup" onclick="showForm('signup')" data-manus_clickable="true" data-manus_click_id="5">Sign Up</button>
+        <button id="tabLogin" class="active" onclick="showForm('login')">Log In</button>
+        <button id="tabSignup" onclick="showForm('signup')">Sign Up</button>
       </div>
-
-      <!-- LOGIN FORM -->
+      <div id="rolePlayer" class="role-panel active">
       <form id="loginForm" class="auth-form active" action="backend/login.php" method="POST">
-        <div class="field field-icon">
-          <label for="loginEmail" data-manus_clickable="true" data-manus_click_id="6">Email</label>
-          <span class="icon">✉️</span>
-          <input type="email" id="loginEmail" name="email" placeholder="you@example.com" required="" data-manus_clickable="true" data-manus_click_id="7">
-        </div>
-        <div class="field field-icon">
-          <label for="loginPassword" data-manus_clickable="true" data-manus_click_id="8">Password</label>
-          <span class="icon">🔒</span>
-          <input type="password" id="loginPassword" name="password" placeholder="••••••••" required="" data-manus_clickable="true" data-manus_click_id="9">
-          <button type="button" class="toggle-pass" onclick="togglePassword('loginPassword', this)" data-manus_clickable="true" data-manus_click_id="10">Show</button>
-        </div>
-        <div class="field-row-between">
-          <label style="font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px;" data-manus_clickable="true" data-manus_click_id="11">
-            <input type="checkbox" style="width:auto;" data-manus_clickable="true" data-manus_click_id="12"> Remember me
-          </label>
-          <a href="#" data-manus_clickable="true" data-manus_click_id="13">Forgot password?</a>
-        </div>
-        <button type="submit" class="btn btn-primary" data-manus_clickable="true" data-manus_click_id="14">Log In</button>
-        <p class="muted" style="font-size:12.5px;margin-top:10px;">Demo login: player@example.com / player123</p>
+        <div class="field field-icon"><label for="loginEmail">Email</label><span class="icon">✉️</span><input type="email" id="loginEmail" name="email" placeholder="you@example.com" required></div>
+        <div class="field field-icon"><label for="loginPassword">Password</label><span class="icon">🔒</span><input type="password" id="loginPassword" name="password" placeholder="••••••••" required><button type="button" class="toggle-pass" onclick="togglePassword('loginPassword', this)">Show</button></div>
+        <div class="field-row-between"><label style="font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px;"><input type="checkbox" style="width:auto;"> Remember me</label><a href="#">Forgot password?</a></div>
+        <button type="submit" class="btn btn-primary">Log In</button>
+        <p class="muted" style="font-size:12.5px;margin-top:10px;">One login works for players, venue owners, and administrators.</p>
       </form>
-
-      <!-- SIGNUP FORM -->
       <form id="signupForm" class="auth-form" action="backend/signup.php" method="POST">
-        <div class="field field-icon">
-          <label for="signupName">Full Name</label>
-          <span class="icon">👤</span>
-          <input type="text" id="signupName" name="name" placeholder="Rahul Sharma" required="">
-        </div>
-        <div class="field field-icon">
-          <label for="signupEmail">Email</label>
-          <span class="icon">✉️</span>
-          <input type="email" id="signupEmail" name="email" placeholder="you@example.com" required="">
-        </div>
-        <div class="field field-icon">
-          <label for="signupPassword">Password</label>
-          <span class="icon">🔒</span>
-          <input type="password" id="signupPassword" name="password" placeholder="••••••••" required="">
-          <button type="button" class="toggle-pass" onclick="togglePassword('signupPassword', this)">Show</button>
-        </div>
-        <button type="submit" class="btn btn-primary">Create Account</button>
-        <p class="otp-note">You'll receive an OTP on email to verify your account</p>
+        <div class="field field-icon"><label for="signupName">Full Name</label><span class="icon">👤</span><input type="text" id="signupName" name="name" placeholder="Rahul Sharma" required></div>
+        <div class="field field-icon"><label for="signupEmail">Email</label><span class="icon">✉️</span><input type="email" id="signupEmail" name="email" placeholder="you@example.com" required></div>
+        <div class="field field-icon"><label for="signupPassword">Password</label><span class="icon">🔒</span><input type="password" id="signupPassword" name="password" placeholder="••••••••" required><button type="button" class="toggle-pass" onclick="togglePassword('signupPassword', this)">Show</button></div>
+        <button type="submit" class="btn btn-primary">Create Player Account</button>
       </form>
       </div>
-
-      <div id="roleOwner" class="role-panel">
-        <form id="ownerLoginForm">
-        <div class="field field-icon">
-          <label for="ownerEmail">Email</label>
-          <span class="icon">✉️</span>
-          <input type="email" id="ownerEmail" placeholder="owner@example.com" required="">
-        </div>
-        <div class="field field-icon">
-          <label for="ownerPassword">Password</label>
-          <span class="icon">🔒</span>
-          <input type="password" id="ownerPassword" placeholder="••••••••" required="">
-        </div>
-        <button type="submit" class="btn btn-primary">Log In as Facility Owner</button>
-        <p class="muted" style="font-size:12.5px;margin-top:10px;">Demo login: owner@example.com / owner123</p>
-        </form>
-      </div>
-
-      <div id="roleAdmin" class="role-panel">
-        <form id="adminLoginForm">
-        <div class="field field-icon">
-          <label for="adminEmail">Email</label>
-          <span class="icon">✉️</span>
-          <input type="email" id="adminEmail" placeholder="admin@courthub.com" required="">
-        </div>
-        <div class="field field-icon">
-          <label for="adminPassword">Password</label>
-          <span class="icon">🔒</span>
-          <input type="password" id="adminPassword" placeholder="••••••••" required="">
-        </div>
-        <button type="submit" class="btn btn-primary">Log In as Admin</button>
-        <p class="muted" style="font-size:12.5px;margin-top:10px;">Demo login: admin@courthub.com / admin123</p>
-        </form>
+      <div class="unified-login-note">
+        <div class="note-icon">🏟️</div><div><strong>Do you own a court or sports venue?</strong><p>Register your business to list courts, manage availability, and accept bookings.</p><a href="#" data-nav="court-interest" class="btn btn-outline">Register your court</a></div>
       </div>
     </div>
   </div>
-
+</div>
 </div>
 
+<div class="page-section registration-page" id="court-interest" style="display:none;">
+  <div class="registration-shell">
+    <div class="registration-header"><a href="#" data-nav="login" class="logo">Court<span>Hub</span></a><a href="#" data-nav="login" class="btn btn-outline">Back to login</a></div>
+    <div class="registration-card"><div class="registration-progress"><span class="active">1. Business details</span><span>2. Create account</span></div><h2>Register your court</h2><p class="lead">Tell us about your facility. After this step, you’ll create the login account used to manage your venue.</p>
+      <form id="courtInterestForm"><div class="registration-grid">
+        <div class="field"><label for="venueBusinessName">Business / venue name</label><input id="venueBusinessName" required placeholder="Game Point Arena"></div>
+        <div class="field"><label for="venueBusinessType">Business type</label><select id="venueBusinessType"><option>Sports facility</option><option>Badminton academy</option><option>Football turf</option><option>Cricket ground</option><option>Tennis club</option><option>Multi-sport venue</option></select></div>
+        <div class="field full"><label for="venueBusinessAddress">Business address</label><input id="venueBusinessAddress" required placeholder="Street, area, city"></div>
+        <div class="field"><label for="venueContactName">Contact person</label><input id="venueContactName" required placeholder="Your full name"></div>
+        <div class="field"><label for="venueContactEmail">Business email</label><input type="email" id="venueContactEmail" required placeholder="owner@business.com"></div>
+        <div class="field"><label for="venueContactPhone">Phone number</label><input type="tel" id="venueContactPhone" required placeholder="+91 98765 43210"></div>
+        <div class="field"><label for="venueCourtCount">Number of courts / grounds</label><input type="number" id="venueCourtCount" min="1" value="1" required></div>
+      </div><div class="registration-actions"><button type="button" class="btn btn-outline" data-nav="login">Cancel</button><button type="submit" class="btn btn-primary">Continue to signup</button></div></form>
+    </div>
+  </div>
+</div>
 
-
-
+<div class="page-section registration-page" id="venue-signup" style="display:none;">
+  <div class="registration-shell"><div class="registration-header"><a href="#" data-nav="login" class="logo">Court<span>Hub</span></a><a href="#" data-nav="court-interest" class="btn btn-outline">Back</a></div>
+    <div class="registration-card"><div class="registration-progress"><span>1. Business details</span><span class="active">2. Create account</span></div><h2>Create your venue account</h2><p class="lead">Use this email and password to access your owner dashboard. We’ll review your venue details after signup.</p>
+      <form id="venueSignupForm"><div class="registration-grid"><div class="field full"><label for="venueSignupEmail">Login email</label><input type="email" id="venueSignupEmail" required></div><div class="field"><label for="venueSignupPassword">Password</label><input type="password" id="venueSignupPassword" minlength="6" required></div><div class="field"><label for="venueSignupPasswordConfirm">Confirm password</label><input type="password" id="venueSignupPasswordConfirm" minlength="6" required></div></div><div class="registration-actions"><button type="button" class="btn btn-outline" data-nav="court-interest">Back</button><button type="submit" class="btn btn-primary">Create venue account</button></div></form>
+    </div></div>
 </div>
 
 <div class="page-section" id="home" style="display:none;">
@@ -2453,6 +2422,7 @@ body{color:var(--ink);background:#f6faf8}
   appData.facility = appData.facility || {name:'Game Point Arena',address:'Satellite, Ahmedabad',description:'Indoor courts, floodlights and easy parking.'};
   appData.payments = appData.payments || [];
   appData.notifications = appData.notifications || [];
+  appData.venueApplications = appData.venueApplications || [];
   appData.reviews = appData.reviews || [];
   saveData();
   saveData();
@@ -2777,38 +2747,25 @@ body{color:var(--ink);background:#f6faf8}
       e.preventDefault();
       var email = document.getElementById('loginEmail').value.trim().toLowerCase();
       var password = document.getElementById('loginPassword').value;
-      var user = appData.users.filter(function (u) { return u.email === email && u.password === password && (!u.role || u.role === 'player'); })[0];
-      if (!user) { alert('No matching player account found. Please sign up, or use the demo login shown below the form.'); return; }
+      var user = appData.users.filter(function (u) { return u.email === email && u.password === password; })[0];
+      if (!user) { alert('No matching account found. Please check your email and password, or create an account.'); return; }
       if (user.status === 'Banned') { alert('This account has been banned by the admin.'); return; }
-      setCurrentUser(user);
-      renderAll();
-      nav('home');
+      setCurrentUser(user); renderAll();
+      nav(user.role === 'admin' ? 'admin-dashboard' : (user.role === 'owner' ? 'owner-dashboard' : 'home'));
     });
-
-    var ownerLoginForm = document.getElementById('ownerLoginForm');
-    if (ownerLoginForm) ownerLoginForm.addEventListener('submit', function (e) {
+    var courtInterestForm = document.getElementById('courtInterestForm');
+    if (courtInterestForm) courtInterestForm.addEventListener('submit', function(e){
       e.preventDefault();
-      var email = document.getElementById('ownerEmail').value.trim().toLowerCase();
-      var password = document.getElementById('ownerPassword').value;
-      var user = appData.users.filter(function (u) { return u.email === email && u.password === password && u.role === 'owner'; })[0];
-      if (!user) { alert('No matching owner account found. Use the demo login shown below the form.'); return; }
-      setCurrentUser(user);
-      renderAll();
-      nav('owner-dashboard');
+      var application={id:'va'+Date.now(),businessName:document.getElementById('venueBusinessName').value.trim(),businessType:document.getElementById('venueBusinessType').value,address:document.getElementById('venueBusinessAddress').value.trim(),contactName:document.getElementById('venueContactName').value.trim(),email:document.getElementById('venueContactEmail').value.trim().toLowerCase(),phone:document.getElementById('venueContactPhone').value.trim(),courtCount:document.getElementById('venueCourtCount').value,createdAt:new Date().toISOString(),status:'New'};
+      appData.venueApplications.push(application); saveData();
+      document.getElementById('venueSignupEmail').value=application.email; try{sessionStorage.setItem('courthub_pending_venue_application',application.id);}catch(e){} nav('venue-signup');
     });
-
-    var adminLoginForm = document.getElementById('adminLoginForm');
-    if (adminLoginForm) adminLoginForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var email = document.getElementById('adminEmail').value.trim().toLowerCase();
-      var password = document.getElementById('adminPassword').value;
-      var user = appData.users.filter(function (u) { return u.email === email && u.password === password && u.role === 'admin'; })[0];
-      if (!user) { alert('No matching admin account found. Use the demo login shown below the form.'); return; }
-      setCurrentUser(user);
-      renderAll();
-      nav('admin-dashboard');
+    var venueSignupForm = document.getElementById('venueSignupForm');
+    if (venueSignupForm) venueSignupForm.addEventListener('submit', function(e){
+      e.preventDefault(); var email=document.getElementById('venueSignupEmail').value.trim().toLowerCase(), password=document.getElementById('venueSignupPassword').value, confirmPassword=document.getElementById('venueSignupPasswordConfirm').value;
+      if(password!==confirmPassword){alert('Passwords do not match.');return;} if(appData.users.some(function(u){return u.email===email;})){alert('An account with this email already exists. Please log in instead.');nav('login');return;}
+      var app=appData.venueApplications.filter(function(x){return x.email===email;}).slice(-1)[0]; var user={id:'u'+Date.now(),name:app?app.contactName:'Venue Owner',email:email,password:password,role:'owner',status:'Active',venueApplicationId:app?app.id:''}; appData.users.push(user); if(app){app.status='Account created';app.ownerUserId=user.id;} saveData(); alert('Venue account created successfully. Please log in with your new email and password.'); showAuthForm('login'); nav('login'); document.getElementById('loginEmail').value=email; document.getElementById('loginPassword').value='';
     });
-
     var tabLogin = document.getElementById('tabLogin');
     var tabSignup = document.getElementById('tabSignup');
     if (tabLogin && tabSignup) {
@@ -2911,6 +2868,9 @@ body{color:var(--ink);background:#f6faf8}
   }
 
   function selectRole(role) {
+    // Kept for compatibility with older saved pages; the login UI is now shared.
+    if (role && document.getElementById('loginEmail')) showAuthForm('login');
+    return;
     ['player', 'owner', 'admin'].forEach(function (r) {
       var panel = document.getElementById('role' + r.charAt(0).toUpperCase() + r.slice(1));
       var tab = document.getElementById('roleTab' + r.charAt(0).toUpperCase() + r.slice(1));
