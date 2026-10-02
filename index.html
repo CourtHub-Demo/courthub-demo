@@ -2262,7 +2262,7 @@ body{color:var(--ink);background:#f6faf8}
     <p class="muted" style="margin-top:6px;">New facility listings waiting for review</p>
 
     <div class="card mt-24">
-      <p class="muted" style="font-size:13.5px;">No pending facility listings right now.</p>
+      <div id="facilityApprovalsList"><p class="muted" style="font-size:13.5px;">No pending facility listings right now.</p></div>
     </div>
   </div>
 </div>
@@ -2457,9 +2457,23 @@ body{color:var(--ink);background:#f6faf8}
     var existing=(typeof venueCatalog!=='undefined'&&venueCatalog||[]).filter(function(v){return v.name==='Game Point Arena';})[0]||{};
     return {name:name,photo:existing.photo||'',sport:first.sport||'Multi-sport',city:city,area:area,price:first.price||500,rating:4.8,icon:'🏟️',grad:'linear-gradient(135deg,#087f66,#123d5b)',badge:'Live venue',isLiveFacility:true,courtCount:courts.length,openCourtCount:open.length,address:address};
   }
+  function applicationVenue(app){
+    if(!app || app.status!=='Approved') return null;
+    var parts=String(app.address||'').split(',').map(function(x){return x.trim();}).filter(Boolean);
+    var city=parts.length?parts[parts.length-1]:'Ahmedabad', area=parts.length>1?parts[0]:city;
+    var type=String(app.businessType||'Sports facility');
+    var sport=type.toLowerCase().indexOf('badminton')>-1?'Badminton':type.toLowerCase().indexOf('football')>-1?'Football':type.toLowerCase().indexOf('cricket')>-1?'Cricket':type.toLowerCase().indexOf('tennis')>-1?'Tennis':'Multi-sport';
+    var fallback=(typeof venueCatalog!=='undefined'?venueCatalog:[])[0]||{};
+    return {name:app.businessName,photo:app.photo||fallback.photo||'',sport:sport,city:city,area:area,price:Number(app.price)||500,rating:app.rating||4.5,icon:sport==='Football'?'⚽':sport==='Cricket'?'🏏':sport==='Tennis'?'🎾':'🏟️',grad:'linear-gradient(135deg,#087f66,#123d5b)',badge:'Verified venue',isApprovedApplication:true,applicationId:app.id,courtCount:Number(app.courtCount)||1,openCourtCount:Number(app.courtCount)||1,address:app.address};
+  }
+  function approvedApplicationVenues(){
+    return (appData.venueApplications||[]).filter(function(app){return app.status==='Approved';}).map(applicationVenue).filter(Boolean);
+  }
   function liveVenueCatalog(){
     var base=(typeof venueCatalog!=='undefined'?venueCatalog:[]).filter(function(v){return v.name!=='Game Point Arena' && !v.isLiveFacility;});
-    return [liveFacilityVenue()].concat(base);
+    var approved=approvedApplicationVenues();
+    var names={};
+    return [liveFacilityVenue()].concat(approved,base).filter(function(v){if(names[v.name])return false;names[v.name]=true;return true;});
   }
   function renderLiveFacilityBanner(){
     var el=document.getElementById('liveFacilityBanner');if(!el)return;var v=liveFacilityVenue();
@@ -2468,8 +2482,8 @@ body{color:var(--ink);background:#f6faf8}
   function refreshSharedData(){
     try{
       var raw=localStorage.getItem('courthub_data');if(!raw)return;var fresh=JSON.parse(raw);if(!fresh||!fresh.courts)return;
-      appData=fresh;appData.courts=appData.courts||[];appData.facility=appData.facility||{name:'Game Point Arena',address:'Satellite, Ahmedabad'};restoreCurrentUser();
-      renderLiveFacilityBanner();renderDiscoveryVenues();
+      appData=fresh;appData.courts=appData.courts||[];appData.facility=appData.facility||{name:'Game Point Arena',address:'Satellite, Ahmedabad'};appData.venueApplications=appData.venueApplications||[];restoreCurrentUser();
+      renderLiveFacilityBanner();renderDiscoveryVenues();renderFacilityApprovals();
       var active=document.querySelector('.page-section[style*="display: block"]');var id=active&&active.id;
       if(id==='select-court'){renderBookingCourtOptions();renderLiveBookingSlots();}
       if(id==='venue-details'&&currentVenue&&currentVenue.isLiveFacility){openVenue(liveFacilityVenue().name);}
@@ -2584,6 +2598,27 @@ body{color:var(--ink);background:#f6faf8}
     if (!usersEl) return;
     usersEl.textContent = appData.users.length;
     bookingsEl.textContent = appData.bookings.length;
+    renderFacilityApprovals();
+  }
+  function renderFacilityApprovals(){
+    var host=document.getElementById('facilityApprovalsList'); if(!host)return;
+    var pending=(appData.venueApplications||[]).filter(function(a){return a.status!=='Approved'&&a.status!=='Rejected';}).slice().reverse();
+    if(!pending.length){host.innerHTML='<p class="muted" style="font-size:13.5px;">No pending facility listings right now.</p>';return;}
+    host.innerHTML=pending.map(function(a){
+      var when=a.createdAt?new Date(a.createdAt).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}):'Recently';
+      return '<div class="list-row" style="align-items:flex-start;gap:16px;flex-wrap:wrap;">'+
+        '<div style="min-width:220px;flex:1;"><strong>'+escapeHtml(a.businessName)+'</strong><br><span class="muted" style="font-size:13px;">'+escapeHtml(a.businessType)+' · '+escapeHtml(a.address)+'</span><br><span class="muted" style="font-size:12px;">'+escapeHtml(a.contactName)+' · '+escapeHtml(a.email)+' · '+escapeHtml(a.phone)+'</span><br><span class="muted" style="font-size:12px;">'+escapeHtml(String(a.courtCount||1))+' court/ground(s) · Submitted '+when+'</span></div>'+
+        '<span class="badge badge-requested">'+escapeHtml(a.status||'Pending')+'</span>'+
+        '<div class="booking-row-actions"><button class="approve-btn" onclick="approveVenueApplication(\''+escapeHtml(a.id)+'\')">Approve & publish</button><button class="reject-btn" onclick="rejectVenueApplication(\''+escapeHtml(a.id)+'\')">Reject</button></div></div>';
+    }).join('');
+  }
+  function approveVenueApplication(id){
+    var a=(appData.venueApplications||[]).filter(function(x){return x.id===id;})[0];if(!a)return;
+    a.status='Approved';a.approvedAt=new Date().toISOString();saveData();renderFacilityApprovals();renderDiscoveryVenues();showToast(a.businessName+' is now live in Venues');
+  }
+  function rejectVenueApplication(id){
+    var a=(appData.venueApplications||[]).filter(function(x){return x.id===id;})[0];if(!a)return;
+    a.status='Rejected';a.rejectedAt=new Date().toISOString();saveData();renderFacilityApprovals();showToast('Venue application rejected');
   }
 
   function renderAdminBookings(){var list=document.getElementById('adminConfirmedBookingsList');if(!list)return;var confirmed=(appData.bookings||[]).filter(function(b){return b.status==='Confirmed';}).slice().reverse();var upcoming=confirmed.filter(function(b){return !b.date||b.date>=localDateKey(new Date());});var value=confirmed.reduce(function(sum,b){return sum+(parseFloat(b.amount)||0);},0);var c=document.getElementById('adminConfirmedCount'),u=document.getElementById('adminUpcomingCount'),v=document.getElementById('adminConfirmedValue');if(c)c.textContent=confirmed.length;if(u)u.textContent=upcoming.length;if(v)v.textContent='₹'+value.toLocaleString('en-IN');list.innerHTML=confirmed.length?confirmed.map(function(b){return '<div class="list-row"><div><strong>'+escapeHtml(b.userName||'Player')+'</strong><br><span class="muted" style="font-size:13px;">'+escapeHtml(b.venue||'Venue')+' · '+escapeHtml(b.court||'Court')+'</span></div><span class="muted" style="font-size:13px;">'+escapeHtml(b.date||'Date TBD')+(b.slot?(' · '+escapeHtml(b.slot)):'')+'</span><span class="badge badge-confirmed">Confirmed</span><strong>₹'+escapeHtml(String(b.amount||0))+'</strong></div>';}).join(''):'<p class="muted" style="font-size:13.5px;">No confirmed bookings yet.</p>';}
@@ -2693,6 +2728,7 @@ body{color:var(--ink);background:#f6faf8}
     if (id === 'admin-dashboard') renderAdminDashboard();
     if (id === 'admin-bookings') renderAdminBookings();
     if (id === 'user-management') renderUserManagement();
+    if (id === 'facility-approvals') renderFacilityApprovals();
   }
 
   /* ---------- Wiring ---------- */
