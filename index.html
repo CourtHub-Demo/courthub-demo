@@ -3073,8 +3073,11 @@ body{color:var(--ink);background:#f6faf8}
       if(chosen===today && hourFromLabel(label)<=currentHour) return false;
       return true;
     });
+    var previousSelected=grid.querySelector('.slot.selected');
+    var previousLabel=previousSelected?previousSelected.textContent.trim():'';
     if(!available.length){grid.innerHTML='<div class="no-live-slots">No more slots are available today. Choose a future date or another court.</div>';return;}
-    grid.innerHTML=available.map(function(label,i){return '<div class="slot live-available '+(i===0?'selected':'')+'" data-hour="'+hourFromLabel(label)+'">'+escapeHtml(label)+'</div>';}).join('');
+    var selectedLabel=available.indexOf(previousLabel)>-1?previousLabel:available[0];
+    grid.innerHTML=available.map(function(label){return '<div class="slot live-available '+(label===selectedLabel?'selected':'')+'" data-hour="'+hourFromLabel(label)+'">'+escapeHtml(label)+'</div>';}).join('');
     grid.querySelectorAll('.slot').forEach(function(slot){slot.addEventListener('click',function(){grid.querySelectorAll('.slot').forEach(function(x){x.classList.remove('selected');});this.classList.add('selected');});});
   }
   function hourFromLabel(label){var m=String(label).match(/(\d{1,2})\s*(AM|PM)/i);if(!m)return 0;var raw=parseInt(m[1],10);if(raw===12&&m[2].toUpperCase()==='AM')return 24;var h=raw%12;return h+(m[2].toUpperCase()==='PM'?12:0);}
