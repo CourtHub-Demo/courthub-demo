@@ -3019,11 +3019,13 @@ body{color:var(--ink);background:#f6faf8}
 
   function pad2(n){return String(n).padStart(2,'0');}
   function localDateKey(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-  function prettyToday(d){return d.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
-  function prettyTime(d){return d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+  function indiaParts(d){var p={};new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(d).forEach(function(x){if(x.type!=='literal')p[x.type]=x.value;});return {year:Number(p.year),month:Number(p.month),day:Number(p.day),hour:Number(p.hour),minute:Number(p.minute),second:Number(p.second)};}
+  function indiaDateKey(d){var p=indiaParts(d);return p.year+'-'+pad2(p.month)+'-'+pad2(p.day);}
+  function prettyToday(d){return new Intl.DateTimeFormat(undefined,{timeZone:'Asia/Kolkata',weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d);}
+  function prettyTime(d){return new Intl.DateTimeFormat(undefined,{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true}).format(d);}
   function slotLabel(hour){if(hour===24)return '12 AM';var h=hour%12||12;return h+' '+(hour<12?'AM':'PM');}
   function liveSlotHours(){return [6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24];}
-  function renderLiveClock(){var now=new Date();document.querySelectorAll('[data-live-clock]').forEach(function(e){e.textContent=prettyTime(now);});var t=document.getElementById('bookingLiveTime');if(t)t.textContent=prettyTime(now);var label=document.getElementById('bookingTodayLabel');if(label)label.textContent=prettyToday(now);}
+  function renderLiveClock(){var now=new Date(),p=indiaParts(now);document.querySelectorAll('[data-live-clock]').forEach(function(e){e.textContent=prettyTime(now)+' IST';});var t=document.getElementById('bookingLiveTime');if(t)t.textContent=prettyTime(now)+' IST';var label=document.getElementById('bookingTodayLabel');if(label)label.textContent=prettyToday(now)+' · India';}
   function bookingCourts(){
     var venueName=currentVenue&&currentVenue.name;
     if(!venueName||venueName==='Game Point Arena'||(currentVenue&&currentVenue.isLiveFacility)||venueName===(appData.facility||{}).name)return appData.courts||[];
@@ -3041,12 +3043,12 @@ body{color:var(--ink);background:#f6faf8}
   function renderBookingCalendar(){
     var calendar=document.getElementById('bookingCalendar'),keyInput=document.getElementById('bookingDateKey');
     if(!calendar||!keyInput)return;
-    var now=new Date(),today=localDateKey(now),chosen=keyInput.value||selectedBookingDate||today;
+    var now=new Date(),today=indiaDateKey(now),chosen=keyInput.value||selectedBookingDate||today;
     if(chosen<today)chosen=today;
     selectedBookingDate=chosen; keyInput.value=chosen;
-    var base=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    var indiaToday=indiaParts(now),base=new Date(Date.UTC(indiaToday.year,indiaToday.month-1,indiaToday.day,12,0,0));
     calendar.innerHTML=Array.from({length:30},function(_,i){
-      var d=new Date(base); d.setDate(base.getDate()+i); var key=localDateKey(d);
+      var d=new Date(base); d.setUTCDate(base.getUTCDate()+i); var key=indiaDateKey(d);
       var selected=key===chosen?' selected':''; var todayClass=key===today?' today':'';
       return '<button type="button" class="booking-day'+selected+todayClass+'" onclick="selectBookingDate(\''+key+'\')"><span class="day-name">'+d.toLocaleDateString(undefined,{weekday:'short'})+'</span><span class="day-number">'+d.getDate()+'</span><span class="day-month">'+d.toLocaleDateString(undefined,{month:'short'})+'</span></button>';
     }).join('');
@@ -3056,7 +3058,7 @@ body{color:var(--ink);background:#f6faf8}
     var input=document.getElementById('date'),keyInput=document.getElementById('bookingDateKey'),grid=document.getElementById('liveSlotGrid');
     if(!input||!grid)return;
     renderBookingCourtOptions();
-    var now=new Date(),today=localDateKey(now),chosen=(keyInput&&keyInput.value)||selectedBookingDate||today;
+    var now=new Date(),today=indiaDateKey(now),chosen=(keyInput&&keyInput.value)||selectedBookingDate||today;
     if(chosen<today)chosen=today;
     selectedBookingDate=chosen;if(keyInput)keyInput.value=chosen;
     var selectedDate=new Date(chosen+'T12:00:00');input.value=prettyToday(selectedDate)+(chosen===today?' (Today)':'');renderBookingCalendar();
@@ -3067,10 +3069,12 @@ body{color:var(--ink);background:#f6faf8}
     /* For today, hide slots that have already started. The live clock is refreshed
        every second, so the list automatically removes each slot as time moves on.
        Future dates keep all configured slots available. */
-    var currentHour=now.getHours();
+    var currentHour=indiaParts(now).hour;
     var available=configured.filter(function(label){
       if(booked[label]) return false;
-      if(chosen===today && hourFromLabel(label)<=currentHour) return false;
+      var slotHour=hourFromLabel(label);
+      if(slotHour===24 && currentHour<6) slotHour=0;
+      if(chosen===today && slotHour<=currentHour) return false;
       return true;
     });
     var previousSelected=grid.querySelector('.slot.selected');
