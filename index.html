@@ -3064,10 +3064,16 @@ body{color:var(--ink);background:#f6faf8}
     var venueName=(currentVenue&&currentVenue.name)||'Game Point Arena',booked={};
     (appData.bookings||[]).forEach(function(b){if(b.venue===venueName&&b.court===court.name&&b.date===chosen&&b.slot&&b.status!=='Cancelled'&&b.status!=='Rejected')booked[b.slot]=true;});
     var configured=(court.slots&&court.slots.length?court.slots:liveSlotHours().map(function(h){return slotLabel(h);}));
-    /* Every open slot remains selectable, including earlier slots today.
-       Only booked or owner-closed slots are removed from the live list. */
-    var available=configured.filter(function(label){return !booked[label];});
-    if(!available.length){grid.innerHTML='<div class="no-live-slots">No slots are available for this date. Choose another day or court.</div>';return;}
+    /* For today, hide slots that have already started. The live clock is refreshed
+       every second, so the list automatically removes each slot as time moves on.
+       Future dates keep all configured slots available. */
+    var currentHour=now.getHours();
+    var available=configured.filter(function(label){
+      if(booked[label]) return false;
+      if(chosen===today && hourFromLabel(label)<=currentHour) return false;
+      return true;
+    });
+    if(!available.length){grid.innerHTML='<div class="no-live-slots">No more slots are available today. Choose a future date or another court.</div>';return;}
     grid.innerHTML=available.map(function(label,i){return '<div class="slot live-available '+(i===0?'selected':'')+'" data-hour="'+hourFromLabel(label)+'">'+escapeHtml(label)+'</div>';}).join('');
     grid.querySelectorAll('.slot').forEach(function(slot){slot.addEventListener('click',function(){grid.querySelectorAll('.slot').forEach(function(x){x.classList.remove('selected');});this.classList.add('selected');});});
   }
