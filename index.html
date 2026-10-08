@@ -1399,6 +1399,52 @@ body{color:var(--ink);background:#f6faf8}
 .live-facility-banner h3{font-size:17px;margin:3px 0}.live-facility-banner p{margin:0;color:var(--muted);font-size:12.5px}.live-facility-banner .btn{width:auto;padding:9px 12px;font-size:12px}
 
 </style>
+
+<style id="courthub-night-neon-theme">
+/* CourtHub Night Neon theme — visual-only layer */
+:root{
+  --bg:#07111f;
+  --surface:#f7fbff;
+  --surface-2:#edf5fa;
+  --ink:#0b1726;
+  --ink-soft:#23384a;
+  --muted:#647789;
+  --border:#d7e4ed;
+  --primary:#0ca8c8;
+  --primary-dark:#087a98;
+  --accent:#b9ff3b;
+  --accent-dark:#5e9f18;
+  --shadow:0 18px 44px rgba(3,15,29,.18);
+  --shadow-sm:0 8px 24px rgba(3,15,29,.10);
+}
+html,body{background:#07111f;color:var(--ink)}
+body{background:linear-gradient(180deg,rgba(7,17,31,.98),rgba(10,27,43,.98));}
+.page-section{background:linear-gradient(180deg,rgba(7,17,31,.96),rgba(13,31,48,.96)),url('assets/night-neon-bg.webp') center/cover fixed;}
+.navbar{background:rgba(4,12,23,.88);border-bottom:1px solid rgba(185,255,59,.18);backdrop-filter:blur(18px)}
+.navbar .logo{color:#f5fbff}.navbar .logo span{color:var(--accent)}.navbar-links a{color:#b9c9d8}.navbar-links a:hover{color:var(--accent)}
+.hero{background:linear-gradient(90deg,rgba(3,12,24,.94) 0%,rgba(3,12,24,.72) 39%,rgba(3,12,24,.22) 100%),url('assets/night-neon-bg.webp') center/cover;min-height:calc(100vh - 68px)}
+.hero:before{opacity:.11;background:linear-gradient(90deg,transparent 0 49%,rgba(185,255,59,.65) 50% 50.2%,transparent 50.3%),linear-gradient(0deg,transparent 0 49%,rgba(75,224,255,.6) 50% 50.2%,transparent 50.3%);background-size:150px 100px;transform:rotate(-10deg)}
+.hero-kicker{color:#d9f7ff}.hero-kicker:before{background:var(--accent);box-shadow:0 0 0 5px rgba(185,255,59,.16)}.hero h1{color:#fff}.hero p{color:#d3e0e9}
+.btn-primary{background:linear-gradient(135deg,#c5ff46,#83d929);color:#081522;box-shadow:0 8px 22px rgba(185,255,59,.22)}.btn-primary:hover{background:linear-gradient(135deg,#d5ff75,#9be73f)}
+.btn-accent{background:linear-gradient(135deg,#4fe6ff,#0ca8c8);color:#03131d}.btn-outline{border-color:#b9cedb;background:rgba(255,255,255,.9);color:#123046}.btn-outline:hover{border-color:#0ca8c8;background:#eafaff;color:#087a98}
+.search-bar{background:rgba(4,16,29,.72);border-color:rgba(185,255,59,.26);box-shadow:0 18px 45px rgba(0,0,0,.25)}
+.location-btn,.city-select{border-color:rgba(75,224,255,.3);background:rgba(6,26,42,.7);color:#e8f8ff}.location-btn:hover,.city-select:hover{border-color:var(--accent);background:rgba(13,51,62,.8)}
+.live-dot{background:var(--accent);box-shadow:0 0 0 4px rgba(185,255,59,.16)}
+.card,.venue-card,.analytics-card,.stat-card{background:rgba(248,252,255,.96);border-color:rgba(207,225,236,.9);box-shadow:var(--shadow-sm)}
+.city-pill{background:rgba(248,252,255,.96);border-color:#c7dbe5;color:#496174}.city-pill.active,.city-pill:hover{background:#eaffc4;border-color:#8fd62b;color:#3f7313}
+.venue-card .sport-tag{background:#e7fbff;color:#087a98}.venue-badge{color:#087a98}.section-head h3,.discovery-toolbar h2{color:#fff}.section-head .see-all{color:#b9ff3b}
+.map-preview{background:linear-gradient(135deg,rgba(4,20,35,.9),rgba(8,53,67,.9)),url('assets/night-neon-bg.webp') center/cover;box-shadow:var(--shadow)}
+.auth-wrap{background:#07111f!important}.auth-brand{background:linear-gradient(90deg,rgba(3,12,24,.94),rgba(3,12,24,.46)),url('assets/night-neon-bg.webp') center/cover!important}.auth-brand:after{opacity:.12!important}.auth-brand .brand-art{opacity:0!important}.auth-brand .brand-top .logo{color:#fff}.auth-brand .brand-top .logo span{color:var(--accent)}.auth-brand .brand-mid h1{color:#fff}.auth-brand .brand-mid p{color:#c9d8e2}.auth-panel{background:#f5faff}.auth-card{background:#fff;border-color:#dce9f1;box-shadow:0 20px 55px rgba(2,18,33,.18)}.auth-card .kicker{color:#0ca8c8}.role-tabs button.active{background:#eaffc4;border-color:#a9df56;color:#4f8317}.auth-tabs button.active{color:#087a98}
+.field input,.field select,.filter-bar input[type=text]{border-color:#cddfe9;background:#fbfdff}.field input:focus,.field select:focus,.filter-bar input[type=text]:focus{border-color:#0ca8c8;box-shadow:0 0 0 4px rgba(12,168,200,.12)}
+#owner-dashboard,#manage-facility,#owner-bookings,#owner-profile,#admin-dashboard,#facility-approvals,#user-management,#reports-moderation,#admin-profile{background:linear-gradient(180deg,#07111f 0%,#0d2233 100%)}
+#owner-dashboard .navbar,#manage-facility .navbar,#owner-bookings .navbar,#owner-profile .navbar,#admin-dashboard .navbar,#facility-approvals .navbar,#user-management .navbar,#reports-moderation .navbar,#admin-profile .navbar{background:#04101d}
+#owner-dashboard .panel-sidebar,#manage-facility .panel-sidebar,#owner-bookings .panel-sidebar,#owner-profile .panel-sidebar,#admin-dashboard .panel-sidebar,#facility-approvals .panel-sidebar,#user-management .panel-sidebar,#reports-moderation .panel-sidebar,#admin-profile .panel-sidebar{background:#071a2b;border-right:1px solid rgba(75,224,255,.16)}
+#owner-dashboard .panel-sidebar a.active,#manage-facility .panel-sidebar a.active,#owner-bookings .panel-sidebar a.active,#owner-profile .panel-sidebar a.active,#admin-dashboard .panel-sidebar a.active,#facility-approvals .panel-sidebar a.active,#user-management .panel-sidebar a.active,#reports-moderation .panel-sidebar a.active,#admin-profile .panel-sidebar a.active{color:#07111f;background:var(--accent);border-right-color:var(--accent)}
+.panel-main h2,.owner-hero h2{color:#fff}.panel-main .muted,.owner-hero .eyebrow{color:#b9cfdb}.quick-link-card{background:rgba(248,252,255,.96)}
+.live-date-card{background:#efffd9;border-color:#c5e98a;color:#386416}.live-date-card strong{color:#3c6e10}.slot.live-available{border-color:#9ed945;background:#f8ffe9}.slot.live-available.selected{background:#8cce32;border-color:#8cce32;color:#07111f}
+.confirm-wrap{background:linear-gradient(180deg,#07111f,#102b40)}
+@media(max-width:640px){.hero{min-height:calc(100vh - 62px);background-position:62% center}.auth-brand{background-position:65% center}.page-section{background-attachment:scroll}}
+</style>
 </head>
 <body>
 <div class="page-section" id="login" style="display:block;">
