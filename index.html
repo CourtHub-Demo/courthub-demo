@@ -3016,9 +3016,15 @@ body{color:var(--ink);background:#f6faf8}
 
 
   function pad2(n){return String(n).padStart(2,'0');}
-  function localDateKey(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-  function prettyToday(d){return d.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
-  function prettyTime(d){return d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+  /* All booking decisions use India Standard Time, independent of the device timezone. */
+  function istNow(){
+    var parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).formatToParts(new Date()).reduce(function(o,p){o[p.type]=p.value;return o;},{});
+    return {year:+parts.year,month:+parts.month,day:+parts.day,hour:+parts.hour,minute:+parts.minute,second:+parts.second};
+  }
+  function istDateKey(){var t=istNow();return t.year+'-'+pad2(t.month)+'-'+pad2(t.day);}
+  function localDateKey(d){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);}
+  function prettyToday(d){return d.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Kolkata'});}
+  function prettyTime(d){return d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',second:'2-digit',timeZone:'Asia/Kolkata'});}
   function slotLabel(hour){if(hour===24)return '12 AM';var h=hour%12||12;return h+' '+(hour<12?'AM':'PM');}
   function liveSlotHours(){return [6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24];}
   function renderLiveClock(){var now=new Date();document.querySelectorAll('[data-live-clock]').forEach(function(e){e.textContent=prettyTime(now);});var t=document.getElementById('bookingLiveTime');if(t)t.textContent=prettyTime(now);var label=document.getElementById('bookingTodayLabel');if(label)label.textContent=prettyToday(now);}
@@ -3039,10 +3045,10 @@ body{color:var(--ink);background:#f6faf8}
   function renderBookingCalendar(){
     var calendar=document.getElementById('bookingCalendar'),keyInput=document.getElementById('bookingDateKey');
     if(!calendar||!keyInput)return;
-    var now=new Date(),today=localDateKey(now),chosen=keyInput.value||selectedBookingDate||today;
+    var now=new Date(),today=istDateKey(),chosen=keyInput.value||selectedBookingDate||today;
     if(chosen<today)chosen=today;
     selectedBookingDate=chosen; keyInput.value=chosen;
-    var base=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    var ist=istNow(),base=new Date(ist.year,ist.month-1,ist.day);
     calendar.innerHTML=Array.from({length:30},function(_,i){
       var d=new Date(base); d.setDate(base.getDate()+i); var key=localDateKey(d);
       var selected=key===chosen?' selected':''; var todayClass=key===today?' today':'';
@@ -3054,7 +3060,7 @@ body{color:var(--ink);background:#f6faf8}
     var input=document.getElementById('date'),keyInput=document.getElementById('bookingDateKey'),grid=document.getElementById('liveSlotGrid');
     if(!input||!grid)return;
     renderBookingCourtOptions();
-    var now=new Date(),today=localDateKey(now),chosen=(keyInput&&keyInput.value)||selectedBookingDate||today;
+    var now=new Date(),ist=istNow(),today=istDateKey(),chosen=(keyInput&&keyInput.value)||selectedBookingDate||today;
     if(chosen<today)chosen=today;
     selectedBookingDate=chosen;if(keyInput)keyInput.value=chosen;
     var selectedDate=new Date(chosen+'T12:00:00');input.value=prettyToday(selectedDate)+(chosen===today?' (Today)':'');renderBookingCalendar();
@@ -3062,9 +3068,14 @@ body{color:var(--ink);background:#f6faf8}
     var venueName=(currentVenue&&currentVenue.name)||'Game Point Arena',booked={};
     (appData.bookings||[]).forEach(function(b){if(b.venue===venueName&&b.court===court.name&&b.date===chosen&&b.slot&&b.status!=='Cancelled'&&b.status!=='Rejected')booked[b.slot]=true;});
     var configured=(court.slots&&court.slots.length?court.slots:liveSlotHours().map(function(h){return slotLabel(h);}));
-    /* Every open slot remains selectable, including earlier slots today.
-       Only booked or owner-closed slots are removed from the live list. */
-    var available=configured.filter(function(label){return !booked[label];});
+    /* For today, only slots whose start is still in the future are selectable in IST. */
+    var nowMinutes=ist.hour*60+ist.minute;
+    var available=configured.filter(function(label){
+      if(booked[label])return false;
+      if(chosen!==today)return true;
+      var startHour=hourFromLabel(label),startMinutes=startHour===24?1440:startHour*60;
+      return startMinutes>=nowMinutes;
+    });
     if(!available.length){grid.innerHTML='<div class="no-live-slots">No slots are available for this date. Choose another day or court.</div>';return;}
     grid.innerHTML=available.map(function(label,i){return '<div class="slot live-available '+(i===0?'selected':'')+'" data-hour="'+hourFromLabel(label)+'">'+escapeHtml(label)+'</div>';}).join('');
     grid.querySelectorAll('.slot').forEach(function(slot){slot.addEventListener('click',function(){grid.querySelectorAll('.slot').forEach(function(x){x.classList.remove('selected');});this.classList.add('selected');});});
